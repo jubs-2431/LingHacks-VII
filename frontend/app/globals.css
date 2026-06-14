@@ -186,6 +186,12 @@ body {
   opacity: 1 !important;
 }
 
+.elder-mode .analyze-submit,
+.elder-mode .analyze-submit span,
+.elder-mode .analyze-submit svg {
+  color: #ffffff !important;
+}
+
 @media print {
   .no-print,
   nav,
