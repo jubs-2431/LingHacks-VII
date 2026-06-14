@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0e1a;
+  --foreground: #f8fafc;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Elder Mode High-Contrast Accessibility Overrides */
+.elder-mode {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-size: 1.35rem !important;
+  line-height: 2 !important;
+}
+
+.elder-mode body {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.elder-mode h1, 
+.elder-mode h2, 
+.elder-mode h3, 
+.elder-mode h4,
+.elder-mode p,
+.elder-mode span,
+.elder-mode label,
+.elder-mode li,
+.elder-mode button,
+.elder-mode select,
+.elder-mode textarea {
+  color: #000000 !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+}
+
+.elder-mode select,
+.elder-mode textarea {
+  background-color: #ffffff !important;
+  border: 3px solid #000000 !important;
+  color: #000000 !important;
+}
+
+.elder-mode .bg-slate-900,
+.elder-mode .bg-slate-950,
+.elder-mode .bg-slate-900\/20,
+.elder-mode .bg-slate-950\/60,
+.elder-mode .bg-slate-900\/40,
+.elder-mode .bg-slate-900\/80 {
+  background-color: #f1f5f9 !important;
+  border: 2px solid #000000 !important;
+}
+
+/* Print CSS Layout */
+@media print {
+  .no-print,
+  nav,
+  button,
+  footer {
+    display: none !important;
+  }
+  
+  body, 
+  .elder-mode, 
+  .elder-mode body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .print-container {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+}
