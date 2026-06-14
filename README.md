@@ -22,6 +22,8 @@ ElderShield accepts pasted text, PDFs, PNGs, and JPEGs. It:
 - preserves PDF page provenance for every finding;
 - supports authenticated, encrypted report retention with expiring,
   access-limited, revocable share links.
+- includes a saved-report library and protected caregiver links that reopen
+  the report inside the application.
 
 Document-specific rules currently cover leases, insurance forms, medical consent, financial agreements, and terms/privacy documents.
 

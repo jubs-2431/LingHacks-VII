@@ -7,6 +7,7 @@ import { useAccessibility } from "../../lib/AccessibilityContext";
 import ElderModeToggle from "../../components/ElderModeToggle";
 import UploadBox from "../../components/UploadBox";
 import { analyzeText } from "../../lib/api";
+import { saveAnalysisSession } from "../../lib/analysisSession";
 import { DocumentType, PageSpan } from "../../lib/types";
 import { AlertCircle, ArrowLeft, ShieldCheck } from "lucide-react";
 
@@ -25,17 +26,20 @@ export default function AnalyzePage() {
     documentType: DocumentType,
     extractionWarnings: string[],
     pages: PageSpan[],
+    filename: string | null,
   ) => {
     setLoading(true);
     setError(null);
     try {
       const results = await analyzeText(text, documentType, pages);
-      sessionStorage.setItem("document_text", text);
-      sessionStorage.setItem("analysis_results", JSON.stringify(results));
-      sessionStorage.setItem(
-        "extraction_warnings",
-        JSON.stringify(extractionWarnings),
-      );
+      saveAnalysisSession({
+        text,
+        results,
+        extractionWarnings,
+        pages,
+        filename,
+        reportId: null,
+      });
       router.push("/results");
     } catch (err: unknown) {
       console.error(err);

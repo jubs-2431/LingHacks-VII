@@ -23,7 +23,8 @@ are random opaque values stored only as SHA-256 hashes and rotated on use.
 ## Encrypted Reports
 
 - `POST /api/reports`
-- `GET /api/reports`
+- `GET /api/reports?limit=50&offset=0` (maximum page size: 100;
+  total count is returned in `X-Total-Count`)
 - `GET /api/reports/{report_id}`
 - `DELETE /api/reports/{report_id}`
 - `POST /api/reports/{report_id}/shares`
@@ -32,6 +33,8 @@ are random opaque values stored only as SHA-256 hashes and rotated on use.
 
 Report routes require a bearer access token except the final share-link route.
 Share tokens are random, hashed at rest, expiring, access-limited, and
-revocable.
+revocable. `SHARE_URL_TEMPLATE` should point to the frontend
+`/shared/{token}` route; that route exchanges the token through
+`GET /api/shares/{token}` and opens the normal results experience.
 
 Interactive OpenAPI documentation is available at `/docs` outside production.

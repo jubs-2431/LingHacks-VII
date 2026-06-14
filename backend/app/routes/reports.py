@@ -2,8 +2,8 @@ import secrets
 from datetime import timedelta, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select, update
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.audit import record_audit
@@ -92,6 +92,7 @@ def create_report(
     analysis = analyze_document_text(
         payload.text,
         payload.document_type,
+        warnings=payload.warnings,
         page_spans=pages,
     )
     report = Report(
@@ -117,16 +118,25 @@ def create_report(
 def list_reports(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
+    response: Response,
+    limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    offset: Annotated[int, Query(ge=0)] = 0,
 ) -> list[dict]:
+    now = utc_now()
+    filters = (
+        Report.owner_id == user.id,
+        Report.deleted_at.is_(None),
+        Report.expires_at > now,
+    )
+    total = db.scalar(select(func.count()).select_from(Report).where(*filters)) or 0
     reports = db.scalars(
         select(Report)
-        .where(
-            Report.owner_id == user.id,
-            Report.deleted_at.is_(None),
-            Report.expires_at > utc_now(),
-        )
+        .where(*filters)
         .order_by(Report.created_at.desc())
+        .limit(limit)
+        .offset(offset)
     )
+    response.headers["X-Total-Count"] = str(total)
     return [_summary(report) for report in reports]
 
 

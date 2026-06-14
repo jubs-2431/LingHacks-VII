@@ -30,6 +30,50 @@ def test_analyze_rejects_unknown_document_type():
     assert response.status_code == 422
 
 
+def test_analyze_rejects_invalid_page_provenance():
+    text = "You must pay within 10 days."
+    response = client.post(
+        "/api/analyze",
+        json={
+            "text": text,
+            "document_type": "financial",
+            "pages": [
+                {
+                    "page_number": 1,
+                    "start": 0,
+                    "end": len(text) - 1,
+                    "used_ocr": False,
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    assert "final page span" in response.text.lower()
+
+
+def test_analyze_rejects_nonsequential_page_numbers():
+    text = "You must pay within 10 days."
+    response = client.post(
+        "/api/analyze",
+        json={
+            "text": text,
+            "document_type": "financial",
+            "pages": [
+                {
+                    "page_number": 2,
+                    "start": 0,
+                    "end": len(text),
+                    "used_ocr": False,
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    assert "start at 1" in response.text.lower()
+
+
 def test_analyze_returns_rich_findings():
     response = client.post(
         "/api/analyze",

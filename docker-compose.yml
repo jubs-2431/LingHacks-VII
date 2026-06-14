@@ -31,7 +31,7 @@ services:
       AUTO_CREATE_SCHEMA: "false"
       API_ALLOWED_ORIGINS: http://localhost:3000
       PUBLIC_WEB_URL: http://localhost:3000
-      SHARE_URL_TEMPLATE: http://localhost:8000/api/shares/{token}
+      SHARE_URL_TEMPLATE: http://localhost:3000/shared/{token}
       DATABASE_URL: postgresql+psycopg://eldershield:eldershield@postgres:5432/eldershield
       REDIS_URL: redis://redis:6379/0
       JWT_SECRET: local-compose-secret-change-before-deployment

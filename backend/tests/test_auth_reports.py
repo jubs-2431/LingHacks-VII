@@ -74,6 +74,7 @@ def test_report_is_encrypted_owner_scoped_and_share_is_access_limited():
                 "text": plaintext,
                 "document_type": "financial",
                 "filename": "agreement.txt",
+                "warnings": ["One scanned page required OCR review."],
                 "pages": [
                     {
                         "page_number": 1,
@@ -87,6 +88,9 @@ def test_report_is_encrypted_owner_scoped_and_share_is_access_limited():
         assert created_response.status_code == 201
         created = created_response.json()
         assert created["text"] == plaintext
+        assert created["analysis"]["warnings"] == [
+            "One scanned page required OCR review."
+        ]
         assert created["analysis"]["clauses"][0]["page_numbers"] == [1]
 
         with SessionLocal() as db:
@@ -151,3 +155,64 @@ def test_duplicate_registration_and_weak_password_are_rejected():
             json={"email": "weak@example.com", "password": "short"},
         )
         assert weak.status_code == 422
+
+
+def test_report_listing_is_bounded_and_reports_total_count():
+    with TestClient(app) as client:
+        owner = register(client)
+        headers = auth_header(owner)
+        for index in range(3):
+            response = client.post(
+                "/api/reports",
+                headers=headers,
+                json={
+                    "text": f"You must pay ${index + 1} within 10 days.",
+                    "document_type": "financial",
+                    "filename": f"agreement-{index}.txt",
+                    "pages": [],
+                },
+            )
+            assert response.status_code == 201
+
+        first_page = client.get(
+            "/api/reports?limit=2&offset=0",
+            headers=headers,
+        )
+        second_page = client.get(
+            "/api/reports?limit=2&offset=2",
+            headers=headers,
+        )
+
+        assert first_page.status_code == 200
+        assert first_page.headers["X-Total-Count"] == "3"
+        assert len(first_page.json()) == 2
+        assert len(second_page.json()) == 1
+
+
+def test_owner_can_revoke_a_share_link():
+    with TestClient(app) as client:
+        owner = register(client)
+        headers = auth_header(owner)
+        created = client.post(
+            "/api/reports",
+            headers=headers,
+            json={
+                "text": "You must pay within 10 days.",
+                "document_type": "financial",
+                "pages": [],
+            },
+        ).json()
+        share = client.post(
+            f"/api/reports/{created['id']}/shares",
+            headers=headers,
+            json={"expires_in_hours": 1, "max_accesses": 5},
+        ).json()
+        token = urlparse(share["share_url"]).path.rsplit("/", 1)[-1]
+
+        revoked = client.delete(
+            f"/api/reports/{created['id']}/shares/{share['id']}",
+            headers=headers,
+        )
+
+        assert revoked.status_code == 204
+        assert client.get(f"/api/shares/{token}").status_code == 404
