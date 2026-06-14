@@ -89,3 +89,48 @@
 .elder-mode .analyze-submit svg {
   color: #ffffff !important;
 }
+
+.elder-mode .home-elder-readable,
+.elder-mode .home-elder-readable section,
+.elder-mode .home-elder-readable main {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+.elder-mode .home-elder-readable h1,
+.elder-mode .home-elder-readable h2,
+.elder-mode .home-elder-readable h3,
+.elder-mode .home-elder-readable h4,
+.elder-mode .home-elder-readable p,
+.elder-mode .home-elder-readable span,
+.elder-mode .home-elder-readable a,
+.elder-mode .home-elder-readable button,
+.elder-mode .home-elder-readable em {
+  color: #ffffff !important;
+}
+
+.elder-mode .home-elder-readable [class*="text-slate"],
+.elder-mode .home-elder-readable .text-muted,
+.elder-mode .home-elder-readable .text-muted-foreground,
+.elder-mode .home-elder-readable .text-faint {
+  color: #f1f5f9 !important;
+}
+
+.elder-mode .home-elder-readable .text-amber-500 {
+  color: #ffd166 !important;
+}
+
+.elder-mode .home-elder-readable .liquid-glass,
+.elder-mode .home-elder-readable .feature-scroll-card,
+.elder-mode .home-elder-readable [class*="editorPanel"],
+.elder-mode .home-elder-readable [class*="depthCard"] {
+  background: rgba(2, 12, 19, 0.72) !important;
+  border: 2px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.45) !important;
+}
+
+.elder-mode .home-elder-readable .home-top-nav {
+  background: rgba(2, 12, 19, 0.72) !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(16px) !important;
+}
