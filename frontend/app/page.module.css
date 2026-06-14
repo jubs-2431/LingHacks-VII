@@ -1,0 +1,76 @@
+.glassPanel {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.035));
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.cinematicSection {
+  position: relative;
+  isolation: isolate;
+  scroll-margin-top: 96px;
+}
+
+.cinematicSection::before {
+  content: "";
+  position: absolute;
+  inset: 16% auto 16% 50%;
+  z-index: -1;
+  width: min(44rem, 80vw);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.09), transparent 68%);
+  filter: blur(18px);
+  opacity: 0.55;
+  animation: cinematicDrift 8s ease-in-out infinite alternate;
+}
+
+.scrollCue {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  display: grid;
+  height: 4.5rem;
+  width: 1.75rem;
+  transform: translateX(-50%);
+  place-items: start center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+}
+
+.scrollCue span {
+  margin-top: 0.75rem;
+  height: 0.7rem;
+  width: 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  animation: scrollPulse 1.4s ease-in-out infinite;
+}
+
+.scrollDot {
+  height: 0.55rem;
+  width: 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.36);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.scrollDot:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 26px rgba(255, 255, 255, 0.38);
+  transform: scale(1.8);
+}
+
+@keyframes scrollPulse {
+  0% { transform: translateY(0); opacity: 0.4; }
+  55% { transform: translateY(2.35rem); opacity: 1; }
+  100% { transform: translateY(2.35rem); opacity: 0; }
+}
+
+@keyframes cinematicDrift {
+  from { transform: translateX(-50%) scale(0.96); opacity: 0.38; }
+  to { transform: translateX(-48%) scale(1.08); opacity: 0.68; }
+}
