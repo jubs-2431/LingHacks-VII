@@ -30,7 +30,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full ${inter.variable} ${instrumentSerif.variable}`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`h-full ${inter.variable} ${instrumentSerif.variable}`}
+    >
       <body className="min-h-full bg-background text-foreground font-sans antialiased">
         <AccessibilityProvider>{children}</AccessibilityProvider>
       </body>

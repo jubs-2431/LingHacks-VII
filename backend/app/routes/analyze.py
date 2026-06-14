@@ -1,86 +1,129 @@
-import re
-from fastapi import APIRouter, UploadFile, File, HTTPException
+import logging
+
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+
 from app.models.schemas import (
     AnalyzeRequest,
+    AnalyzeDocumentResponse,
     AnalyzeResponse,
+    DocumentType,
+    ExtractTextResponse,
     SimplifyRequest,
     SimplifyResponse,
 )
 from app.nlp.risk_detector import analyze_document_text
-from app.nlp.risk_patterns import RISK_PATTERNS
-from app.nlp.severity import score_clause
-from app.nlp.explanations import get_explanation
-from app.utils.pdf_extract import extract_text_from_pdf
+from app.settings import MAX_TEXT_CHARACTERS, MAX_UPLOAD_BYTES
+from app.utils.pdf_extract import (
+    UnsupportedDocumentError,
+    UnreadableDocumentError,
+    extract_text_from_document,
+)
 
+
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
-MAX_TEXT_CHARS = 120_000
-MAX_PDF_BYTES = 10 * 1024 * 1024
 
 @router.post("/analyze", response_model=AnalyzeResponse)
-def analyze(payload: AnalyzeRequest):
-    text = payload.text.strip()
-    if not text:
-        raise HTTPException(status_code=400, detail="Please provide document text to analyze.")
-    if len(text) > MAX_TEXT_CHARS:
-        raise HTTPException(status_code=413, detail="Document is too long for the demo. Please shorten it and try again.")
+def analyze(payload: AnalyzeRequest) -> dict:
+    return analyze_document_text(
+        payload.text,
+        payload.document_type,
+        page_spans=[page.model_dump() for page in payload.pages],
+    )
+
+
+@router.post("/extract-text", response_model=ExtractTextResponse)
+async def extract_text(file: UploadFile = File(...)) -> dict:
+    filename = file.filename or "uploaded-document"
+    content = await file.read(MAX_UPLOAD_BYTES + 1)
+    await file.close()
+
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"File exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)} MB limit.",
+        )
+    if not content:
+        raise HTTPException(status_code=400, detail="The uploaded file is empty.")
 
     try:
-        return analyze_document_text(text)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+        result = extract_text_from_document(content, filename, file.content_type)
+    except UnsupportedDocumentError as exc:
+        raise HTTPException(status_code=415, detail=str(exc)) from exc
+    except UnreadableDocumentError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.exception("Unexpected document extraction failure")
+        raise HTTPException(
+            status_code=500,
+            detail="The document could not be processed safely.",
+        ) from exc
 
-@router.post("/extract-text")
-async def extract_text(file: UploadFile = File(...)):
-    filename = file.filename or ""
-    if not filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
-
-    try:
-        content = await file.read()
-        if not content:
-            raise HTTPException(status_code=400, detail="The uploaded PDF is empty.")
-        if len(content) > MAX_PDF_BYTES:
-            raise HTTPException(status_code=413, detail="PDF is too large for the demo. Please upload a file under 10 MB.")
-
-        text = extract_text_from_pdf(content)
-        if not text.strip():
-            raise HTTPException(status_code=422, detail="No readable text was found. This may be a scanned PDF; paste the text directly instead.")
-        return {"text": text}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PDF extraction failed: {str(e)}")
-
-@router.post("/simplify-clause", response_model=SimplifyResponse)
-def simplify_clause(payload: SimplifyRequest):
-    clause = payload.clause.strip()
-    if not clause:
-        raise HTTPException(status_code=400, detail="Please provide a clause to simplify.")
-
-    detected_risks = []
-    for risk_type, patterns in RISK_PATTERNS.items():
-        matched_terms = []
-        for pattern in patterns:
-            matches = re.findall(pattern, clause, flags=re.IGNORECASE)
-            if matches:
-                for match in matches:
-                    matched_terms.append(" ".join(match) if isinstance(match, tuple) else match)
-        if matched_terms:
-            detected_risks.append((risk_type, sorted(set(matched_terms))))
-
-    if detected_risks:
-        risk_type, trigger_terms = detected_risks[0]
-        severity = score_clause(clause, risk_type, trigger_terms)
-        explanation = get_explanation(risk_type, trigger_terms)
-        return SimplifyResponse(
-            plain_english=explanation["plain"],
-            risk_type=risk_type,
-            severity=severity,
+    if len(result.text) > MAX_TEXT_CHARACTERS:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=(
+                "Extracted text exceeds the "
+                f"{MAX_TEXT_CHARACTERS:,}-character limit."
+            ),
         )
 
-    return SimplifyResponse(
-        plain_english="This clause has standard phrasing and no high-risk patterns detected.",
-        risk_type="No Risk Detected",
-        severity="low",
+    return {
+        "text": result.text,
+        "filename": filename,
+        "page_count": result.page_count,
+        "used_ocr": result.used_ocr,
+        "warnings": result.warnings,
+        "pages": [
+            {
+                "page_number": page.page_number,
+                "start": page.start,
+                "end": page.end,
+                "used_ocr": page.used_ocr,
+            }
+            for page in result.pages
+        ],
+    }
+
+
+@router.post("/analyze-document", response_model=AnalyzeDocumentResponse)
+async def analyze_document(
+    file: UploadFile = File(...),
+    document_type: DocumentType = Form("other"),
+) -> dict:
+    extraction = await extract_text(file)
+    analysis = analyze_document_text(
+        extraction["text"],
+        document_type,
+        warnings=extraction["warnings"],
+        page_spans=extraction["pages"],
     )
+    return {"extraction": extraction, "analysis": analysis}
+
+
+@router.post("/simplify-clause", response_model=SimplifyResponse)
+def simplify_clause(payload: SimplifyRequest) -> dict:
+    result = analyze_document_text(payload.clause, payload.document_type)
+    findings = result["clauses"]
+
+    if findings:
+        primary = findings[0]
+        return {
+            "plain_english": primary["plain_english"],
+            "risk_type": primary["risk_type"],
+            "severity": primary["severity"],
+            "confidence": primary["confidence"],
+            "findings": findings,
+        }
+
+    return {
+        "plain_english": (
+            "No supported risk pattern was detected in this clause. "
+            "That does not establish that the clause is harmless."
+        ),
+        "risk_type": "No Supported Pattern",
+        "severity": "low",
+        "confidence": 0.0,
+        "findings": [],
+    }

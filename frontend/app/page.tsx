@@ -1,6 +1,7 @@
 "use client";
 
 import { type MouseEvent, type ReactNode, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
 import { useAccessibility } from "../lib/AccessibilityContext";
@@ -115,7 +116,7 @@ export default function LandingPage() {
       <main className="relative z-10">
         <section id="story" ref={storyRef} className={`${styles.scrollyChapter} min-h-[220vh]`}>
           <div className={styles.stickyScene}>
-            <motion.div className={styles.sequenceStage} style={{ scale: sequenceScale, opacity: sequenceOpacity }}><img src={frames[frameIndex]} alt="Scroll-controlled ElderShield document analysis frame" className={styles.sequenceImage} draggable={false} /><div className={styles.frameReadout}>FRAME {String(frameIndex + 1).padStart(2, "0")} / {FRAME_COUNT}</div></motion.div>
+            <motion.div className={styles.sequenceStage} style={{ scale: sequenceScale, opacity: sequenceOpacity }}><Image src={frames[frameIndex]} alt="Scroll-controlled ElderShield document analysis frame" width={880} height={560} unoptimized className={styles.sequenceImage} draggable={false} /><div className={styles.frameReadout}>FRAME {String(frameIndex + 1).padStart(2, "0")} / {FRAME_COUNT}</div></motion.div>
             <div className={styles.heroCopy}><Reveal><h1 className={`max-w-7xl font-normal leading-[0.95] tracking-[-2.46px] ${elderMode ? "text-6xl sm:text-7xl md:text-8xl" : "text-5xl sm:text-7xl md:text-8xl"}`} style={{ fontFamily: "var(--font-display), serif" }}>Where <em className="not-italic text-muted-foreground">clarity</em> rises <em className="not-italic text-muted-foreground">through the fine print.</em></h1></Reveal><Reveal className="mx-auto mt-8 max-w-2xl"><p className={`leading-relaxed text-muted-foreground ${elderMode ? "text-2xl" : "text-base sm:text-lg"}`}>A cinematic legal-document explainer for seniors and families: find risk, trace it to the source, and know what to ask before signing.</p></Reveal><Reveal className="mt-12 flex justify-center"><a href="#features" onClick={(event) => handleAnchorClick(event, "features")} className={`liquid-glass rounded-full text-foreground transition-transform duration-150 hover:scale-[1.03] ${elderMode ? "px-16 py-6 text-2xl" : "px-14 py-5 text-base"}`}>Explore features</a></Reveal></div>
           </div>
         </section>

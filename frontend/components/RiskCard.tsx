@@ -87,6 +87,16 @@ export default function RiskCard({ clause, isSelected = false, onSelect }: RiskC
           <SeverityBadge severity={clause.severity} />
         </div>
 
+        <div className={`flex flex-wrap gap-2 text-xs font-semibold ${elderMode ? "text-base text-slate-950" : "text-faint"}`}>
+          <span>{Math.round(clause.confidence * 100)}% pattern confidence</span>
+          {clause.page_numbers.length > 0 && (
+            <span>
+              Page{clause.page_numbers.length > 1 ? "s" : ""}{" "}
+              {clause.page_numbers.join(", ")}
+            </span>
+          )}
+        </div>
+
         <div className={`rounded-lg border p-3 ${elderMode ? "border-2 border-slate-950 bg-slate-100" : "border-line bg-paper/50"}`}>
           <p className={`select-all font-serif italic ${elderMode ? "text-lg leading-relaxed text-slate-950" : "text-sm text-muted"}`}>
             &quot;{clause.text}&quot;
@@ -122,6 +132,26 @@ export default function RiskCard({ clause, isSelected = false, onSelect }: RiskC
             </p>
           </div>
         </div>
+
+        {Object.keys(clause.details).length > 0 && (
+          <div className="space-y-2">
+            <span className={`block font-bold uppercase tracking-wide ${elderMode ? "text-base text-slate-950" : "text-[11px] text-faint"}`}>
+              Extracted details
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(clause.details).flatMap(([key, values]) =>
+                values.map((value) => (
+                  <span
+                    key={`${key}-${value}`}
+                    className={`rounded-full border px-3 py-1 ${elderMode ? "border-slate-950 bg-slate-100 text-slate-950" : "border-line bg-paper text-muted"}`}
+                  >
+                    {value}
+                  </span>
+                )),
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={`mt-4 flex items-center justify-between gap-4 border-t pt-3 pl-2 ${elderMode ? "border-slate-950" : "border-line"}`}>

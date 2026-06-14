@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: eldershield
+      POSTGRES_USER: eldershield
+      POSTGRES_PASSWORD: eldershield
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eldershield -d eldershield"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build: ./backend
+    environment:
+      APP_ENV: development
+      AUTO_CREATE_SCHEMA: "false"
+      API_ALLOWED_ORIGINS: http://localhost:3000
+      PUBLIC_WEB_URL: http://localhost:3000
+      SHARE_URL_TEMPLATE: http://localhost:8000/api/shares/{token}
+      DATABASE_URL: postgresql+psycopg://eldershield:eldershield@postgres:5432/eldershield
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: local-compose-secret-change-before-deployment
+      ENCRYPTION_KEY: MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=
+      MAX_UPLOAD_BYTES: "10485760"
+      MAX_TEXT_CHARACTERS: "200000"
+      RATE_LIMIT_REQUESTS: "120"
+      RATE_LIMIT_WINDOW_SECONDS: "60"
+      TRUST_PROXY_HEADERS: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready', timeout=3)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+volumes:
+  postgres_data:
+  redis_data:

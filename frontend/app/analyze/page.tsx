@@ -7,6 +7,7 @@ import { useAccessibility } from "../../lib/AccessibilityContext";
 import ElderModeToggle from "../../components/ElderModeToggle";
 import UploadBox from "../../components/UploadBox";
 import { analyzeText } from "../../lib/api";
+import { DocumentType, PageSpan } from "../../lib/types";
 import { AlertCircle, ArrowLeft, ShieldCheck } from "lucide-react";
 
 const VIDEO_SRC =
@@ -19,13 +20,22 @@ export default function AnalyzePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleAnalyze = async (text: string, documentType: string) => {
+  const handleAnalyze = async (
+    text: string,
+    documentType: DocumentType,
+    extractionWarnings: string[],
+    pages: PageSpan[],
+  ) => {
     setLoading(true);
     setError(null);
     try {
-      const results = await analyzeText(text, documentType);
+      const results = await analyzeText(text, documentType, pages);
       sessionStorage.setItem("document_text", text);
       sessionStorage.setItem("analysis_results", JSON.stringify(results));
+      sessionStorage.setItem(
+        "extraction_warnings",
+        JSON.stringify(extractionWarnings),
+      );
       router.push("/results");
     } catch (err: unknown) {
       console.error(err);
