@@ -9,6 +9,7 @@ import SiteFooter from "../../components/SiteFooter";
 import ClauseHighlighter from "../../components/ClauseHighlighter";
 import RiskCard from "../../components/RiskCard";
 import Checklist from "../../components/Checklist";
+import ReportActions from "../../components/ReportActions";
 import { AnalysisResult, RiskClause } from "../../lib/types";
 import {
   ArrowLeft,
@@ -26,11 +27,13 @@ export default function ResultsPage() {
   const { elderMode } = useAccessibility();
   const [text, setText] = useState<string | null>(null);
   const [results, setResults] = useState<AnalysisResult | null>(null);
+  const [extractionWarnings, setExtractionWarnings] = useState<string[]>([]);
   const [selectedClause, setSelectedClause] = useState<RiskClause | null>(null);
 
   useEffect(() => {
     const storedText = sessionStorage.getItem("document_text");
     const storedResults = sessionStorage.getItem("analysis_results");
+    const storedWarnings = sessionStorage.getItem("extraction_warnings");
 
     if (!storedText || !storedResults) {
       router.push("/analyze");
@@ -42,6 +45,14 @@ export default function ResultsPage() {
         const parsedResults = JSON.parse(storedResults) as AnalysisResult;
         setText(storedText);
         setResults(parsedResults);
+        if (storedWarnings) {
+          const parsedWarnings = JSON.parse(storedWarnings);
+          setExtractionWarnings(
+            Array.isArray(parsedWarnings)
+              ? parsedWarnings.filter((item) => typeof item === "string")
+              : [],
+          );
+        }
 
         if (parsedResults.clauses && parsedResults.clauses.length > 0) {
           const sorted = [...parsedResults.clauses].sort((a, b) => {
@@ -83,6 +94,7 @@ export default function ResultsPage() {
   const moneyCount = results.category_counts["Money Risk"] || 0;
   const deadlineCount = results.category_counts["Deadline Burden"] || 0;
   const proofCount = results.category_counts["Proof Burden"] || 0;
+  const warnings = [...new Set([...extractionWarnings, ...results.warnings])];
 
   return (
     <div className="min-h-screen flex flex-col bg-paper text-ink">
@@ -109,7 +121,22 @@ export default function ResultsPage() {
             <p className={`max-w-3xl text-muted ${elderMode ? "text-xl text-ink" : "text-lg"}`}>
               {results.summary}
             </p>
+            <p className="text-xs text-faint">
+              Reviewed {results.document_stats.clauses_reviewed} clauses and{" "}
+              {results.document_stats.words.toLocaleString()} words using analysis
+              version {results.analysis_version}.
+            </p>
           </div>
+
+          {warnings.map((warning) => (
+            <div
+              key={warning}
+              className="flex items-start gap-2.5 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900 no-print"
+            >
+              <AlertTriangle className="keep-color mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+              <p className={elderMode ? "text-lg" : "text-sm"}>{warning}</p>
+            </div>
+          ))}
 
           <section className="grid grid-cols-2 gap-3 no-print lg:grid-cols-6">
             <StatCard icon={ShieldAlert} tone="red" label="High risk" value={highCount} elderMode={elderMode} />
@@ -167,6 +194,7 @@ export default function ResultsPage() {
                 <div className="no-print">
                   <Checklist items={results.checklist} />
                 </div>
+                <ReportActions results={results} />
               </div>
             </div>
           </div>

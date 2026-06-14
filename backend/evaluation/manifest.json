@@ -1,0 +1,17 @@
+{
+  "datasets": [
+    {
+      "name": "Contract Understanding Atticus Dataset v1",
+      "slug": "konradb/atticus-open-contract-dataset-aok-beta",
+      "canonical_source": "https://zenodo.org/records/4595826",
+      "kaggle_source": "https://www.kaggle.com/datasets/konradb/atticus-open-contract-dataset-aok-beta",
+      "license": "CC BY 4.0",
+      "retrieved": "2026-06-14",
+      "files": [
+        "CUAD_v1/CUAD_v1.json"
+      ],
+      "purpose": "Offline recall benchmarking against expert-annotated commercial contract spans.",
+      "limitations": "CUAD categories do not exactly match ElderShield categories. Mapped-span recall is diagnostic and is not a legal-validity metric or a standalone release gate."
+    }
+  ]
+}

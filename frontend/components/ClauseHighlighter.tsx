@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useAccessibility } from "../lib/AccessibilityContext";
 import { RiskClause } from "../lib/types";
+
 
 interface ClauseHighlighterProps {
   fullText: string;
@@ -17,6 +18,8 @@ interface HighlightRange {
   clause: RiskClause;
 }
 
+const severityWeight = { high: 3, medium: 2, low: 1 };
+
 export default function ClauseHighlighter({
   fullText,
   clauses,
@@ -25,34 +28,41 @@ export default function ClauseHighlighter({
 }: ClauseHighlighterProps) {
   const { elderMode } = useAccessibility();
 
+  const ranges = useMemo(() => {
+    const candidates: HighlightRange[] = clauses.flatMap((clause) => {
+      const spans = clause.trigger_spans.length
+        ? clause.trigger_spans
+        : [{ start: clause.start_offset, end: clause.end_offset, text: clause.text }];
+      return spans
+        .filter((span) => span.start >= 0 && span.end <= fullText.length && span.end > span.start)
+        .map((span) => ({ start: span.start, end: span.end, clause }));
+    });
+
+    candidates.sort((a, b) => {
+      if (a.start !== b.start) return a.start - b.start;
+      const severityDifference =
+        severityWeight[b.clause.severity] - severityWeight[a.clause.severity];
+      if (severityDifference) return severityDifference;
+      return b.end - b.start - (a.end - a.start);
+    });
+
+    const nonOverlapping: HighlightRange[] = [];
+    let lastEnd = -1;
+    for (const candidate of candidates) {
+      if (candidate.start < lastEnd) continue;
+      nonOverlapping.push(candidate);
+      lastEnd = candidate.end;
+    }
+    return nonOverlapping;
+  }, [clauses, fullText]);
+
   if (!fullText) return null;
 
-  const getHighlightRanges = (): HighlightRange[] => {
-    const ranges: HighlightRange[] = [];
-
-    const clauseIndices = clauses
-      .map((c) => ({ clause: c, index: fullText.indexOf(c.text) }))
-      .filter((item) => item.index !== -1)
-      .sort((a, b) => a.index - b.index);
-
-    let lastEnd = 0;
-    for (const item of clauseIndices) {
-      const start = fullText.indexOf(item.clause.text, lastEnd);
-      if (start !== -1) {
-        const end = start + item.clause.text.length;
-        ranges.push({ start, end, clause: item.clause });
-        lastEnd = end;
-      }
-    }
-    return ranges;
-  };
-
-  const ranges = getHighlightRanges();
   const elements: React.ReactNode[] = [];
   let lastIndex = 0;
 
   const highlightClassFor = (severity: RiskClause["severity"], isSelected: boolean) => {
-    const base = "cursor-pointer rounded px-0.5 transition-colors";
+    const base = "cursor-pointer rounded px-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-shield";
     if (severity === "high") {
       return isSelected
         ? `${base} bg-red-600 text-white font-semibold`
@@ -68,10 +78,10 @@ export default function ClauseHighlighter({
       : `${base} bg-stone-100 text-stone-700 underline decoration-stone-300 decoration-2 underline-offset-2 hover:bg-stone-200`;
   };
 
-  ranges.forEach((range, idx) => {
+  ranges.forEach((range, index) => {
     if (range.start > lastIndex) {
       elements.push(
-        <span key={`text-${idx}`} className="whitespace-pre-wrap">
+        <span key={`text-${index}`} className="whitespace-pre-wrap">
           {fullText.slice(lastIndex, range.start)}
         </span>,
       );
@@ -79,16 +89,16 @@ export default function ClauseHighlighter({
 
     const isSelected = selectedClauseId === range.clause.id;
     elements.push(
-      <span
-        key={`highlight-${idx}`}
+      <button
+        type="button"
+        key={`highlight-${range.start}-${range.end}`}
         onClick={() => onSelectClause(range.clause)}
         className={highlightClassFor(range.clause.severity, isSelected)}
-        title={`Click to read the explanation for: ${range.clause.risk_type}`}
+        title={`${range.clause.risk_type}: ${range.clause.plain_english}`}
       >
         {fullText.slice(range.start, range.end)}
-      </span>,
+      </button>,
     );
-
     lastIndex = range.end;
   });
 

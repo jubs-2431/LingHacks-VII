@@ -1,28 +1,51 @@
-def score_clause(clause: str, risk_type: str, matches: list[str]) -> str:
-    high_terms = [
-        "waive", "waiver", "binding arbitration", "arbitration", "class action",
-        "eviction", "termination", "non-refundable", "non refundable", "lien",
-        "collections", "disclose personal information", "sell your data", "jury trial",
-        "right to sue", "hold harmless", "release from liability",
-    ]
-    medium_terms = [
-        "fee", "fees", "penalty", "penalties", "charged", "charge", "within",
-        "days", "deadline", "prior to", "documentation", "evidence", "proof",
-        "subject to review", "authorize", "auto-renew", "auto renew",
-        "automatic renewal", "automatically renew", "due date", "expiration",
-        "third party", "third-party", "personal information",
-    ]
+import re
 
+
+SEVERITY_RANK = {"low": 1, "medium": 2, "high": 3}
+
+
+def highest_severity(values: list[str]) -> str:
+    if not values:
+        return "low"
+    return max(values, key=lambda value: SEVERITY_RANK[value])
+
+
+def score_clause(
+    clause: str,
+    risk_type: str,
+    matches: list[str],
+    base_severity: str = "low",
+) -> str:
+    """Apply transparent consequence-based adjustments to a rule's base score."""
+    score = SEVERITY_RANK.get(base_severity, 1)
     text = clause.lower()
-    matched_text = " ".join(match.lower() for match in matches)
-    combined = f"{matched_text} {text}"
 
-    if any(term in combined for term in high_terms):
-        return "high"
-    if any(term in combined for term in medium_terms):
-        return "medium"
+    if risk_type in {"Rights Waiver", "Housing Stability", "Medical Consent", "Financial Liability"}:
+        score = max(score, 3)
 
-    if risk_type in {"Rights Waiver", "Money Risk"}:
-        return "medium"
+    severe_consequences = (
+        "eviction",
+        "termination",
+        "collections",
+        "lien",
+        "garnishment",
+        "loss of coverage",
+        "non-refundable",
+        "personal guarantee",
+    )
+    if any(term in text for term in severe_consequences):
+        score = 3
 
-    return "low"
+    amounts = [
+        float(raw.replace(",", ""))
+        for raw in re.findall(r"\$\s*([0-9][0-9,]*(?:\.\d{1,2})?)", clause)
+    ]
+    if risk_type in {"Money Risk", "Financial Liability"} and amounts and max(amounts) >= 1000:
+        score = min(3, score + 1)
+
+    if risk_type == "Ambiguity Burden" and not any(
+        phrase in text for phrase in ("sole discretion", "at our discretion", "at its discretion")
+    ):
+        score = min(score, 1)
+
+    return {rank: label for label, rank in SEVERITY_RANK.items()}[score]

@@ -1,0 +1,10 @@
+{
+  "analysis_version": "2.1.0",
+  "evaluated": "2026-06-14",
+  "documents": 25,
+  "mapped_expected_spans": 248,
+  "mapped_matched_spans": 175,
+  "mapped_span_recall": 0.7056,
+  "release_gate": false,
+  "warning": "Diagnostic only. CUAD label semantics and ElderShield categories differ; the mapping requires legal review."
+}
