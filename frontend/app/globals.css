@@ -157,6 +157,35 @@ body {
   color: #000000 !important;
 }
 
+/* Landing/analyze pages use a fixed cinematic dashboard over dark video.
+   Keep it visible and readable even when elder mode globally forces black text. */
+.elder-mode nav.fixed {
+  color: #f8fafc !important;
+  background: linear-gradient(180deg, rgba(2, 12, 19, 0.72), rgba(2, 12, 19, 0.28)) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+
+.elder-mode nav.fixed a,
+.elder-mode nav.fixed span,
+.elder-mode nav.fixed button,
+.elder-mode nav.fixed svg {
+  color: #f8fafc !important;
+}
+
+.elder-mode nav.fixed .liquid-glass {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+}
+
+.elder-mode [class*="stickyProductTitle"],
+.elder-mode [class*="sectionCounter"],
+.elder-mode [class*="sectionCounter"] span {
+  color: #e2e8f0 !important;
+  opacity: 1 !important;
+}
+
 @media print {
   .no-print,
   nav,
