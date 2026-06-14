@@ -1,7 +1,10 @@
 RISK_PATTERNS = {
     "Rights Waiver": [
         r"\bwaive\b",
+        r"\bwaives?\b",
+        r"\bwaiver\b",
         r"\bbinding arbitration\b",
+        r"\barbitration\b",
         r"\bclass action\b",
         r"\bright to sue\b",
         r"\bjury trial\b",
@@ -10,22 +13,27 @@ RISK_PATTERNS = {
         r"\bhold harmless\b"
     ],
     "Money Risk": [
-        r"\bfee\b",
-        r"\bpenalty\b",
+        r"\bfees?\b",
+        r"\bpenalt(y|ies)\b",
         r"\bcharged\b",
-        r"\bauto-renew\b",
-        r"\bnon-refundable\b",
+        r"\bcharges?\b",
+        r"\bauto[- ]?renew\b",
+        r"\bautomatic(?:ally)? renew(?:al|s|ed)?\b",
+        r"\bnon[- ]?refundable\b",
         r"\bpayment obligations?\b",
-        r"\badditional cost\b",
-        r"\bbillable\b"
+        r"\badditional costs?\b",
+        r"\bbillable\b",
+        r"\blate fees?\b"
     ],
     "Deadline Burden": [
         r"\bwithin \d+ (business )?days\b",
+        r"\bat least \d+ (business )?days\b",
         r"\bno later than\b",
         r"\bdeadline\b",
         r"\bprior to\b",
         r"\bdue date\b",
-        r"\bexpiration\b"
+        r"\bexpiration\b",
+        r"\brenewal date\b"
     ],
     "Ambiguity Burden": [
         r"\bmay be required\b",
@@ -50,9 +58,10 @@ RISK_PATTERNS = {
         r"\bconsent to\b",
         r"\bdisclose\b",
         r"\bshare your information\b",
-        r"\bthird parties\b",
+        r"\bthird[- ]part(y|ies)\b",
         r"\bmarketing partners\b",
-        r"\btrack\b"
+        r"\btrack\b",
+        r"\bpersonal information\b"
     ],
     "Pressure Language": [
         r"\bimmediate action\b",
