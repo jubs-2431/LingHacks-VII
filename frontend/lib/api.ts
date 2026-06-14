@@ -1,6 +1,15 @@
 import { AnalysisResult } from "./types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_BASE_URL = rawApiUrl.replace(/\/$/, "");
+
+async function parseError(response: Response, fallback: string): Promise<string> {
+  const errorData = await response.json().catch(() => null);
+  if (errorData && typeof errorData.detail === "string") {
+    return errorData.detail;
+  }
+  return fallback;
+}
 
 export async function analyzeText(text: string, documentType: string = "other"): Promise<AnalysisResult> {
   const response = await fetch(`${API_BASE_URL}/analyze`, {
@@ -12,8 +21,7 @@ export async function analyzeText(text: string, documentType: string = "other"):
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || "Failed to analyze document.");
+    throw new Error(await parseError(response, "Failed to analyze document."));
   }
 
   return response.json();
@@ -29,12 +37,11 @@ export async function extractTextFromPdf(file: File): Promise<string> {
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || "Failed to extract text from PDF.");
+    throw new Error(await parseError(response, "Failed to extract text from PDF."));
   }
 
   const data = await response.json();
-  return data.text;
+  return typeof data.text === "string" ? data.text : "";
 }
 
 export async function simplifyClause(clause: string): Promise<{ plain_english: string; risk_type: string; severity: string }> {
@@ -47,8 +54,7 @@ export async function simplifyClause(clause: string): Promise<{ plain_english: s
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || "Failed to simplify clause.");
+    throw new Error(await parseError(response, "Failed to simplify clause."));
   }
 
   return response.json();
