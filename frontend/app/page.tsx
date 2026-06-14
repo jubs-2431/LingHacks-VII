@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAccessibility } from "../lib/AccessibilityContext";
 import ElderModeToggle from "../components/ElderModeToggle";
+import styles from "./page.module.css";
 
 const navItems = [
   { label: "Home", href: "#home" },
@@ -35,7 +36,7 @@ export default function LandingPage() {
 
       <div className="fixed right-6 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex">
         {navItems.slice(0, 4).map((item) => (
-          <a key={item.href} href={item.href} className="scroll-dot" aria-label={`Scroll to ${item.label}`} />
+          <a key={item.href} href={item.href} className={styles.scrollDot} aria-label={`Scroll to ${item.label}`} />
         ))}
       </div>
 
@@ -72,7 +73,7 @@ export default function LandingPage() {
       </nav>
 
       <main className="relative z-10 snap-y snap-mandatory">
-        <section id="home" className="cinematic-section flex min-h-screen snap-start flex-col items-center justify-center px-6 py-[120px] text-center">
+        <section id="home" className={`${styles.cinematicSection} flex min-h-screen snap-start flex-col items-center justify-center px-6 py-[120px] text-center`}>
           <h1
             className={`animate-fade-rise max-w-7xl font-normal leading-[0.95] tracking-[-2.46px] ${
               elderMode ? "text-6xl sm:text-7xl md:text-8xl" : "text-5xl sm:text-7xl md:text-8xl"
@@ -104,14 +105,14 @@ export default function LandingPage() {
             <span className="text-sm text-muted-foreground">Scroll to explore · One-page demo</span>
           </div>
 
-          <a href="#dashboard" className="scroll-cue" aria-label="Scroll to dashboard">
+          <a href="#dashboard" className={styles.scrollCue} aria-label="Scroll to dashboard">
             <span />
           </a>
         </section>
 
-        <section id="dashboard" className="cinematic-section mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28">
+        <section id="dashboard" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28`}>
           <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="glass-panel p-8 md:p-10">
+            <div className={`${styles.glassPanel} p-8 md:p-10`}>
               <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Dashboard</p>
               <h2 className="mt-5 max-w-xl font-serif text-5xl leading-none tracking-tight md:text-7xl">
                 Your document becomes a calm risk map.
@@ -126,7 +127,7 @@ export default function LandingPage() {
 
             <div className="grid gap-4">
               {riskCards.map(([title, body], index) => (
-                <article key={title} className="glass-panel group p-6 transition-transform duration-300 hover:-translate-y-1">
+                <article key={title} className={`${styles.glassPanel} group p-6 transition-transform duration-300 hover:-translate-y-1`}>
                   <div className="flex items-start gap-5">
                     <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-white/20 text-sm text-muted-foreground">
                       0{index + 1}
@@ -142,7 +143,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="how-it-works" className="cinematic-section mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28">
+        <section id="how-it-works" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28`}>
           <div className="w-full">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">How it works</p>
             <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -151,7 +152,7 @@ export default function LandingPage() {
                 ["Extract", "The system finds clauses tied to money, deadlines, rights, and obligations."],
                 ["Explain", "Each risky phrase becomes plain English with questions to ask next."],
               ].map(([title, body]) => (
-                <article key={title} className="glass-panel min-h-72 p-7">
+                <article key={title} className={`${styles.glassPanel} min-h-72 p-7`}>
                   <h3 className="font-serif text-4xl">{title}</h3>
                   <p className="mt-5 text-lg leading-8 text-muted-foreground">{body}</p>
                 </article>
@@ -160,8 +161,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="accessibility" className="cinematic-section mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28">
-          <div className="glass-panel mx-auto max-w-4xl p-8 text-center md:p-12">
+        <section id="accessibility" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28`}>
+          <div className={`${styles.glassPanel} mx-auto max-w-4xl p-8 text-center md:p-12`}>
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Accessibility</p>
             <h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Designed for people who need clarity most.</h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
@@ -170,8 +171,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="reach-us" className="cinematic-section flex min-h-screen snap-start items-center justify-center px-6 py-28 text-center">
-          <div className="glass-panel max-w-3xl p-8 md:p-12">
+        <section id="reach-us" className={`${styles.cinematicSection} flex min-h-screen snap-start items-center justify-center px-6 py-28 text-center`}>
+          <div className={`${styles.glassPanel} max-w-3xl p-8 md:p-12`}>
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Reach Us</p>
             <h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Ready for the live demo.</h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
