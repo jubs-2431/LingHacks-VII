@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import "./elder-vision.css";
 import { AccessibilityProvider } from "../lib/AccessibilityContext";
 import { AuthProvider } from "../lib/AuthContext";
 
