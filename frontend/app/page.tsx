@@ -1,16 +1,17 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAccessibility } from "../lib/AccessibilityContext";
 import ElderModeToggle from "../components/ElderModeToggle";
 import styles from "./page.module.css";
 
 const navItems = [
-  { label: "Home", href: "#home" },
-  { label: "Dashboard", href: "#dashboard" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Accessibility", href: "#accessibility" },
-  { label: "Reach Us", href: "#reach-us" },
+  { label: "Home", href: "#home", id: "home" },
+  { label: "Dashboard", href: "#dashboard", id: "dashboard" },
+  { label: "How It Works", href: "#how-it-works", id: "how-it-works" },
+  { label: "Accessibility", href: "#accessibility", id: "accessibility" },
+  { label: "Reach Us", href: "#reach-us", id: "reach-us" },
 ];
 
 const riskCards = [
@@ -21,6 +22,87 @@ const riskCards = [
 
 export default function LandingPage() {
   const { elderMode } = useAccessibility();
+  const [activeSection, setActiveSection] = useState(0);
+  const scrollLock = useRef(false);
+
+  const scrollToSection = (index: number) => {
+    const boundedIndex = Math.max(0, Math.min(index, navItems.length - 1));
+    const target = document.getElementById(navItems[boundedIndex].id);
+    if (!target) return;
+
+    scrollLock.current = true;
+    setActiveSection(boundedIndex);
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    window.setTimeout(() => {
+      scrollLock.current = false;
+    }, 900);
+  };
+
+  const handleAnchorClick = (event: React.MouseEvent<HTMLAnchorElement>, index: number) => {
+    event.preventDefault();
+    scrollToSection(index);
+  };
+
+  useEffect(() => {
+    const sections = navItems
+      .map((item) => document.getElementById(item.id))
+      .filter(Boolean) as HTMLElement[];
+
+    const updateActiveSection = () => {
+      if (scrollLock.current || sections.length === 0) return;
+      const center = window.scrollY + window.innerHeight / 2;
+      const nearestIndex = sections.reduce((bestIndex, section, index) => {
+        const best = sections[bestIndex];
+        const currentDistance = Math.abs(section.offsetTop + section.offsetHeight / 2 - center);
+        const bestDistance = Math.abs(best.offsetTop + best.offsetHeight / 2 - center);
+        return currentDistance < bestDistance ? index : bestIndex;
+      }, 0);
+      setActiveSection(nearestIndex);
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) < 22 || scrollLock.current) return;
+
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const nextIndex = Math.max(0, Math.min(activeSection + direction, navItems.length - 1));
+
+      if (nextIndex !== activeSection) {
+        event.preventDefault();
+        scrollToSection(nextIndex);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        scrollToSection(activeSection + 1);
+      }
+      if (["ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        scrollToSection(activeSection - 1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        scrollToSection(0);
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        scrollToSection(navItems.length - 1);
+      }
+    };
+
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("keydown", handleKeyDown);
+    updateActiveSection();
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeSection]);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
@@ -34,15 +116,34 @@ export default function LandingPage() {
         <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" />
       </video>
 
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-black/10" aria-hidden />
+
+      <div className={styles.progressRail} aria-hidden>
+        <span style={{ height: `${((activeSection + 1) / navItems.length) * 100}%` }} />
+      </div>
+
       <div className="fixed right-6 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex">
-        {navItems.slice(0, 4).map((item) => (
-          <a key={item.href} href={item.href} className={styles.scrollDot} aria-label={`Scroll to ${item.label}`} />
+        {navItems.map((item, index) => (
+          <a
+            key={item.href}
+            href={item.href}
+            onClick={(event) => handleAnchorClick(event, index)}
+            className={`${styles.scrollDot} ${activeSection === index ? styles.scrollDotActive : ""}`}
+            aria-label={`Scroll to ${item.label}`}
+          />
         ))}
+      </div>
+
+      <div className={styles.sectionCounter} aria-hidden>
+        <span>{String(activeSection + 1).padStart(2, "0")}</span>
+        <em />
+        <span>{String(navItems.length).padStart(2, "0")}</span>
       </div>
 
       <nav className="fixed inset-x-0 top-0 z-30 mx-auto flex max-w-7xl flex-row items-center justify-between px-8 py-6">
         <a
           href="#home"
+          onClick={(event) => handleAnchorClick(event, 0)}
           className="text-3xl tracking-tight text-foreground"
           style={{ fontFamily: "var(--font-display), serif" }}
         >
@@ -50,11 +151,14 @@ export default function LandingPage() {
         </a>
 
         <div className="liquid-glass hidden items-center gap-2 rounded-full px-3 py-2 md:flex">
-          {navItems.map((item) => (
+          {navItems.map((item, index) => (
             <a
               key={item.href}
               href={item.href}
-              className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+              onClick={(event) => handleAnchorClick(event, index)}
+              className={`rounded-full px-4 py-2 text-sm transition-colors hover:bg-white/10 hover:text-foreground ${
+                activeSection === index ? "bg-white/10 text-foreground" : "text-muted-foreground"
+              }`}
             >
               {item.label}
             </a>
@@ -74,45 +178,48 @@ export default function LandingPage() {
 
       <main className="relative z-10">
         <section id="home" className={`${styles.cinematicSection} flex min-h-screen flex-col items-center justify-center px-6 py-[120px] text-center`}>
-          <h1
-            className={`animate-fade-rise max-w-7xl font-normal leading-[0.95] tracking-[-2.46px] ${
-              elderMode ? "text-6xl sm:text-7xl md:text-8xl" : "text-5xl sm:text-7xl md:text-8xl"
-            }`}
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            Where <em className="not-italic text-muted-foreground">clarity</em> rises{" "}
-            <em className="not-italic text-muted-foreground">through the fine print.</em>
-          </h1>
+          <div className={styles.revealFrame}>
+            <h1
+              className={`animate-fade-rise max-w-7xl font-normal leading-[0.95] tracking-[-2.46px] ${
+                elderMode ? "text-6xl sm:text-7xl md:text-8xl" : "text-5xl sm:text-7xl md:text-8xl"
+              }`}
+              style={{ fontFamily: "var(--font-display), serif" }}
+            >
+              Where <em className="not-italic text-muted-foreground">clarity</em> rises{" "}
+              <em className="not-italic text-muted-foreground">through the fine print.</em>
+            </h1>
 
-          <p
-            className={`animate-fade-rise-delay mt-8 max-w-2xl leading-relaxed text-muted-foreground ${
-              elderMode ? "text-2xl" : "text-base sm:text-lg"
-            }`}
-          >
-            ElderShield turns complex legal documents into plain-language risk maps for seniors,
-            families, and anyone who wants to understand what they are signing before it matters.
-          </p>
-
-          <div className="animate-fade-rise-delay-2 mt-12 flex flex-col items-center gap-4 sm:flex-row">
-            <a
-              href="#dashboard"
-              className={`liquid-glass rounded-full text-foreground transition-transform duration-150 hover:scale-[1.03] ${
-                elderMode ? "px-16 py-6 text-2xl" : "px-14 py-5 text-base"
+            <p
+              className={`animate-fade-rise-delay mx-auto mt-8 max-w-2xl leading-relaxed text-muted-foreground ${
+                elderMode ? "text-2xl" : "text-base sm:text-lg"
               }`}
             >
-              View Dashboard
-            </a>
-            <span className="text-sm text-muted-foreground">Scroll to explore · One-page demo</span>
+              ElderShield turns complex legal documents into plain-language risk maps for seniors,
+              families, and anyone who wants to understand what they are signing before it matters.
+            </p>
+
+            <div className="animate-fade-rise-delay-2 mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <a
+                href="#dashboard"
+                onClick={(event) => handleAnchorClick(event, 1)}
+                className={`liquid-glass rounded-full text-foreground transition-transform duration-150 hover:scale-[1.03] ${
+                  elderMode ? "px-16 py-6 text-2xl" : "px-14 py-5 text-base"
+                }`}
+              >
+                View Dashboard
+              </a>
+              <span className="text-sm text-muted-foreground">Scroll to explore · One-page demo</span>
+            </div>
           </div>
 
-          <a href="#dashboard" className={styles.scrollCue} aria-label="Scroll to dashboard">
+          <a href="#dashboard" onClick={(event) => handleAnchorClick(event, 1)} className={styles.scrollCue} aria-label="Scroll to dashboard">
             <span />
           </a>
         </section>
 
         <section id="dashboard" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl items-center px-6 py-28`}>
           <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className={`${styles.glassPanel} p-8 md:p-10`}>
+            <div className={`${styles.glassPanel} ${styles.depthCard} p-8 md:p-10`}>
               <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Dashboard</p>
               <h2 className="mt-5 max-w-xl font-serif text-5xl leading-none tracking-tight md:text-7xl">
                 Your document becomes a calm risk map.
@@ -127,7 +234,7 @@ export default function LandingPage() {
 
             <div className="grid gap-4">
               {riskCards.map(([title, body], index) => (
-                <article key={title} className={`${styles.glassPanel} group p-6 transition-transform duration-300 hover:-translate-y-1`}>
+                <article key={title} className={`${styles.glassPanel} ${styles.depthCard} group p-6 transition-transform duration-300 hover:-translate-y-1`}>
                   <div className="flex items-start gap-5">
                     <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-white/20 text-sm text-muted-foreground">
                       0{index + 1}
@@ -152,7 +259,7 @@ export default function LandingPage() {
                 ["Extract", "The system finds clauses tied to money, deadlines, rights, and obligations."],
                 ["Explain", "Each risky phrase becomes plain English with questions to ask next."],
               ].map(([title, body]) => (
-                <article key={title} className={`${styles.glassPanel} min-h-72 p-7`}>
+                <article key={title} className={`${styles.glassPanel} ${styles.depthCard} min-h-72 p-7`}>
                   <h3 className="font-serif text-4xl">{title}</h3>
                   <p className="mt-5 text-lg leading-8 text-muted-foreground">{body}</p>
                 </article>
@@ -162,7 +269,7 @@ export default function LandingPage() {
         </section>
 
         <section id="accessibility" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl items-center px-6 py-28`}>
-          <div className={`${styles.glassPanel} mx-auto max-w-4xl p-8 text-center md:p-12`}>
+          <div className={`${styles.glassPanel} ${styles.depthCard} mx-auto max-w-4xl p-8 text-center md:p-12`}>
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Accessibility</p>
             <h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Designed for people who need clarity most.</h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
@@ -172,7 +279,7 @@ export default function LandingPage() {
         </section>
 
         <section id="reach-us" className={`${styles.cinematicSection} flex min-h-screen items-center justify-center px-6 py-28 text-center`}>
-          <div className={`${styles.glassPanel} max-w-3xl p-8 md:p-12`}>
+          <div className={`${styles.glassPanel} ${styles.depthCard} max-w-3xl p-8 md:p-12`}>
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Reach Us</p>
             <h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Ready for the live demo.</h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
