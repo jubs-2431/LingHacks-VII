@@ -1,25 +1,27 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { AccessibilityProvider } from "../lib/AccessibilityContext";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-body",
+  weight: ["400", "500"],
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-display",
+  weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
-  axes: ["opsz", "SOFT"],
 });
 
 export const metadata: Metadata = {
   title: "ElderShield — Before you sign, know what it means.",
   description:
-    "Linguistic fine-print risk extractor designed for elder accessibility. Detect rights waivers, hidden fees, auto-renewals, deadlines, and ambiguous terms in official documents.",
+    "A cinematic, accessible legal-document explainer for seniors and families. Detect hidden fees, rights waivers, deadlines, and confusing clauses before signing.",
 };
 
 export default function RootLayout({
@@ -28,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full ${inter.variable} ${fraunces.variable}`}>
-      <body className="min-h-full flex flex-col bg-paper text-ink font-sans antialiased">
+    <html lang="en" className={`h-full ${inter.variable} ${instrumentSerif.variable}`}>
+      <body className="min-h-full bg-background text-foreground font-sans antialiased">
         <AccessibilityProvider>{children}</AccessibilityProvider>
       </body>
     </html>
