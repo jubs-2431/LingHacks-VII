@@ -1,5 +1,6 @@
 from functools import lru_cache
 from typing import Literal
+from urllib.parse import urlsplit
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,7 +27,7 @@ class Settings(BaseSettings):
         "http://localhost:3000,http://127.0.0.1:3000"
     )
     public_web_url: str = "http://localhost:3000"
-    share_url_template: str = "http://localhost:8000/api/shares/{token}"
+    share_url_template: str = "http://localhost:3000/shared/{token}"
     database_url: str = "sqlite:///./eldershield.db"
     redis_url: str | None = None
     auto_create_schema: bool = True
@@ -111,6 +112,14 @@ class Settings(BaseSettings):
             errors.append("SHARE_URL_TEMPLATE must contain {token}")
         if not self.share_url_template.startswith("https://"):
             errors.append("SHARE_URL_TEMPLATE must use HTTPS")
+        if (
+            urlsplit(self.share_url_template).scheme,
+            urlsplit(self.share_url_template).netloc,
+        ) != (
+            urlsplit(self.public_web_url).scheme,
+            urlsplit(self.public_web_url).netloc,
+        ):
+            errors.append("SHARE_URL_TEMPLATE must use the PUBLIC_WEB_URL origin")
         if not self.metrics_bearer_token or len(self.metrics_bearer_token) < 32:
             errors.append("METRICS_BEARER_TOKEN must be at least 32 characters")
 

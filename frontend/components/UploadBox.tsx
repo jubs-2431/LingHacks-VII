@@ -14,6 +14,7 @@ interface UploadBoxProps {
     documentType: DocumentType,
     extractionWarnings: string[],
     pages: PageSpan[],
+    filename: string | null,
   ) => void;
   isLoading: boolean;
 }
@@ -85,7 +86,7 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
       return;
     }
     setError(null);
-    onAnalyze(text, docType, extractionWarnings, pages);
+    onAnalyze(text, docType, extractionWarnings, pages, fileName);
   };
 
   const loadSample = () => {

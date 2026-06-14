@@ -82,5 +82,5 @@ The product should produce evidence-backed questions, not legal conclusions.
 1. Complete legal review of the labeled evaluation corpus and CUAD mapping.
 2. Establish measured release thresholds by document type.
 3. Add jurisdiction-aware rule packs after legal review.
-4. Integrate authenticated report workflows into the product UI.
+4. Add account recovery and verified email ownership.
 5. Add an opt-in grounded explanation model only after deterministic accuracy targets are met.

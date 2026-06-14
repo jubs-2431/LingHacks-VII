@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { AccessibilityProvider } from "../lib/AccessibilityContext";
+import { AuthProvider } from "../lib/AuthContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,7 +37,9 @@ export default function RootLayout({
       className={`h-full ${inter.variable} ${instrumentSerif.variable}`}
     >
       <body className="min-h-full bg-background text-foreground font-sans antialiased">
-        <AccessibilityProvider>{children}</AccessibilityProvider>
+        <AuthProvider>
+          <AccessibilityProvider>{children}</AccessibilityProvider>
+        </AuthProvider>
       </body>
     </html>
   );

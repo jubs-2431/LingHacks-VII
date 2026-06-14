@@ -63,3 +63,44 @@ export interface ExtractedDocument {
   warnings: string[];
   pages: PageSpan[];
 }
+
+export interface User {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
+export interface AuthSession {
+  access_token: string;
+  refresh_token: string;
+  token_type: "bearer";
+  expires_in: number;
+  refresh_expires_at: string;
+  user: User;
+}
+
+export interface SavedReportSummary {
+  id: string;
+  filename: string | null;
+  document_type: DocumentType;
+  finding_count: number;
+  highest_severity: Severity | null;
+  created_at: string;
+  expires_at: string;
+}
+
+export interface SavedReport extends SavedReportSummary {
+  text: string;
+  analysis: AnalysisResult;
+  pages: PageSpan[];
+}
+
+export interface ShareLink {
+  id: string;
+  report_id: string;
+  share_url: string;
+  expires_at: string;
+  max_accesses: number;
+  access_count: number;
+  revoked: boolean;
+}

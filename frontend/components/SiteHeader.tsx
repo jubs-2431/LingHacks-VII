@@ -24,7 +24,17 @@ export default function SiteHeader() {
             ElderShield
           </span>
         </Link>
-        <ElderModeToggle />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/reports"
+            className={`font-semibold text-shield hover:text-shield-dark ${
+              elderMode ? "text-lg" : "text-sm"
+            }`}
+          >
+            Saved reports
+          </Link>
+          <ElderModeToggle />
+        </div>
       </div>
     </header>
   );

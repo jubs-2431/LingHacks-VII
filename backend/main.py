@@ -127,6 +127,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "X-Request-ID",
             "X-RateLimit-Limit",
             "X-RateLimit-Remaining",
+            "X-Total-Count",
         ],
     )
 

@@ -25,6 +25,11 @@ class AnalyzeRequest(BaseModel):
             raise ValueError("Document text cannot be blank.")
         return value
 
+    @model_validator(mode="after")
+    def page_spans_must_match_text(self) -> "AnalyzeRequest":
+        validate_page_spans(self.text, self.pages)
+        return self
+
 
 class TextSpanSchema(BaseModel):
     start: int = Field(ge=0)
@@ -94,6 +99,28 @@ class PageSpanSchema(BaseModel):
         if self.end < self.start:
             raise ValueError("Page end offset cannot precede its start offset.")
         return self
+
+
+def validate_page_spans(text: str, pages: list[PageSpanSchema]) -> None:
+    if not pages:
+        return
+    if pages[0].start != 0:
+        raise ValueError("The first page span must start at offset 0.")
+
+    expected_page = 1
+    previous_end = 0
+    for page in pages:
+        if page.page_number != expected_page:
+            raise ValueError("Page numbers must start at 1 and increase without gaps.")
+        if page.start < previous_end:
+            raise ValueError("Page spans must be ordered and must not overlap.")
+        if page.end > len(text):
+            raise ValueError("Page span offsets cannot exceed the document text.")
+        expected_page += 1
+        previous_end = page.end
+
+    if pages[-1].end != len(text):
+        raise ValueError("The final page span must end at the document text length.")
 
 
 class AnalyzeDocumentResponse(BaseModel):

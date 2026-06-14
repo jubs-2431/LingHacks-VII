@@ -20,11 +20,27 @@ def test_production_configuration_accepts_required_controls():
         auto_create_schema=False,
         api_allowed_origins="https://app.example.com",
         public_web_url="https://app.example.com",
-        share_url_template="https://api.example.com/api/shares/{token}",
+        share_url_template="https://app.example.com/shared/{token}",
         metrics_bearer_token="a-long-production-metrics-token-123456",
     )
 
     assert settings.is_production
+
+
+def test_production_configuration_rejects_external_share_origin():
+    with pytest.raises(ValidationError, match="PUBLIC_WEB_URL origin"):
+        Settings(
+            app_env="production",
+            jwt_secret="a-production-jwt-secret-that-is-long-and-unique",
+            encryption_key="MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=",
+            database_url="postgresql+psycopg://user:pass@db/app",
+            redis_url="redis://redis:6379/0",
+            auto_create_schema=False,
+            api_allowed_origins="https://app.example.com",
+            public_web_url="https://app.example.com",
+            share_url_template="https://other.example.com/shared/{token}",
+            metrics_bearer_token="a-long-production-metrics-token-123456",
+        )
 
 
 @pytest.mark.asyncio

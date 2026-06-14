@@ -28,6 +28,11 @@ Store them in a managed secret service. Rotating `ENCRYPTION_KEY` requires a
 data re-encryption migration; changing it directly makes saved reports
 unreadable.
 
+Set `SHARE_URL_TEMPLATE` to the deployed frontend route, for example
+`https://app.example.com/shared/{token}`. The frontend exchanges the token
+with the API and displays the report in the normal results layout. Its origin
+must match `PUBLIC_WEB_URL`.
+
 ## Deployment Order
 
 1. Provision encrypted PostgreSQL and Redis with private networking.
@@ -61,6 +66,10 @@ Saved filenames, text, analysis JSON, and page maps are encrypted before
 database writes.
 Reports and share links expire, can be revoked, and are removed by the cleanup
 job.
+
+The browser keeps access and refresh tokens in tab-scoped session storage.
+They are cleared when the tab session ends; production deployments should
+maintain a restrictive Content Security Policy and avoid third-party scripts.
 
 The application does not upload document content to Kaggle, Sentry, an LLM, or
 another third party.

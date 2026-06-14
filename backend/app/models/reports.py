@@ -1,9 +1,15 @@
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
-from app.models.schemas import AnalyzeResponse, DocumentType, NonEmptyText, PageSpanSchema
+from app.models.schemas import (
+    AnalyzeResponse,
+    DocumentType,
+    NonEmptyText,
+    PageSpanSchema,
+    validate_page_spans,
+)
 
 
 class CreateReportRequest(BaseModel):
@@ -11,6 +17,14 @@ class CreateReportRequest(BaseModel):
     document_type: DocumentType = "other"
     filename: Annotated[str, StringConstraints(max_length=255)] | None = None
     pages: list[PageSpanSchema] = Field(default_factory=list, max_length=10_000)
+    warnings: list[
+        Annotated[str, StringConstraints(min_length=1, max_length=500)]
+    ] = Field(default_factory=list, max_length=100)
+
+    @model_validator(mode="after")
+    def page_spans_must_match_text(self) -> "CreateReportRequest":
+        validate_page_spans(self.text, self.pages)
+        return self
 
 
 class ReportSummaryResponse(BaseModel):

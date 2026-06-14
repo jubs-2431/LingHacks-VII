@@ -10,7 +10,8 @@ import ClauseHighlighter from "../../components/ClauseHighlighter";
 import RiskCard from "../../components/RiskCard";
 import Checklist from "../../components/Checklist";
 import ReportActions from "../../components/ReportActions";
-import { AnalysisResult, RiskClause } from "../../lib/types";
+import { loadAnalysisSession } from "../../lib/analysisSession";
+import { AnalysisResult, PageSpan, RiskClause } from "../../lib/types";
 import {
   ArrowLeft,
   ShieldAlert,
@@ -28,45 +29,34 @@ export default function ResultsPage() {
   const [text, setText] = useState<string | null>(null);
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [extractionWarnings, setExtractionWarnings] = useState<string[]>([]);
+  const [pages, setPages] = useState<PageSpan[]>([]);
+  const [filename, setFilename] = useState<string | null>(null);
+  const [reportId, setReportId] = useState<string | null>(null);
   const [selectedClause, setSelectedClause] = useState<RiskClause | null>(null);
 
   useEffect(() => {
-    const storedText = sessionStorage.getItem("document_text");
-    const storedResults = sessionStorage.getItem("analysis_results");
-    const storedWarnings = sessionStorage.getItem("extraction_warnings");
-
-    if (!storedText || !storedResults) {
+    const stored = loadAnalysisSession();
+    if (!stored) {
       router.push("/analyze");
       return;
     }
 
-    try {
-      queueMicrotask(() => {
-        const parsedResults = JSON.parse(storedResults) as AnalysisResult;
-        setText(storedText);
-        setResults(parsedResults);
-        if (storedWarnings) {
-          const parsedWarnings = JSON.parse(storedWarnings);
-          setExtractionWarnings(
-            Array.isArray(parsedWarnings)
-              ? parsedWarnings.filter((item) => typeof item === "string")
-              : [],
-          );
-        }
+    queueMicrotask(() => {
+      setText(stored.text);
+      setResults(stored.results);
+      setExtractionWarnings(stored.extractionWarnings);
+      setPages(stored.pages);
+      setFilename(stored.filename);
+      setReportId(stored.reportId);
 
-        if (parsedResults.clauses && parsedResults.clauses.length > 0) {
-          const sorted = [...parsedResults.clauses].sort((a, b) => {
-            const severityWeight = { high: 3, medium: 2, low: 1 };
-            return severityWeight[b.severity] - severityWeight[a.severity];
-          });
-          setSelectedClause(sorted[0]);
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      sessionStorage.removeItem("analysis_results");
-      router.push("/analyze");
-    }
+      if (stored.results.clauses.length > 0) {
+        const sorted = [...stored.results.clauses].sort((a, b) => {
+          const severityWeight = { high: 3, medium: 2, low: 1 };
+          return severityWeight[b.severity] - severityWeight[a.severity];
+        });
+        setSelectedClause(sorted[0]);
+      }
+    });
   }, [router]);
 
   if (!text || !results) {
@@ -194,7 +184,14 @@ export default function ResultsPage() {
                 <div className="no-print">
                   <Checklist items={results.checklist} />
                 </div>
-                <ReportActions results={results} />
+                <ReportActions
+                  results={results}
+                  text={text}
+                  pages={pages}
+                  filename={filename}
+                  initialReportId={reportId}
+                  warnings={warnings}
+                />
               </div>
             </div>
           </div>
