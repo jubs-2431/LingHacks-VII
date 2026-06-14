@@ -52,6 +52,7 @@ function Reveal({ children, className = "" }: { children: ReactNode; className?:
 export default function LandingPage() {
   const { elderMode } = useAccessibility();
   const pageRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const storyRef = useRef<HTMLElement | null>(null);
   const featuresRef = useRef<HTMLElement | null>(null);
   const frames = useMemo(() => Array.from({ length: FRAME_COUNT }, (_, index) => makeFrame(index)), []);
@@ -88,10 +89,17 @@ export default function LandingPage() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const holdVideoOnFinalFrame = () => {
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration) || video.duration <= 0) return;
+    video.pause();
+    video.currentTime = Math.max(0, video.duration - 0.08);
+  };
+
   return (
     <div ref={pageRef} className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
       <motion.div className={styles.progressTop} style={{ scaleX: topProgressScale }} />
-      <motion.video className="fixed inset-0 z-0 h-[130vh] w-full object-cover" autoPlay loop muted playsInline preload="auto" style={{ y: bgY }}><source src={VIDEO_SRC} /></motion.video>
+      <motion.video ref={videoRef} className="fixed inset-0 z-0 h-[130vh] w-full object-cover" autoPlay muted playsInline preload="auto" onEnded={holdVideoOnFinalFrame} style={{ y: bgY }}><source src={VIDEO_SRC} /></motion.video>
       <motion.div className={styles.midground} style={{ y: midY }} aria-hidden><span /><span /><span /></motion.div>
       <div className="pointer-events-none fixed inset-0 z-[1] bg-black/20" aria-hidden />
       <motion.div className={styles.stickyProductTitle} style={{ opacity: titleOpacity, y: titleY }}>ElderShield / Evidence Engine</motion.div>
