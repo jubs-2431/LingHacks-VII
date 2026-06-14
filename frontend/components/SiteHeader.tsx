@@ -21,7 +21,7 @@ export default function SiteHeader() {
               elderMode ? "text-3xl" : "text-xl"
             }`}
           >
-            ElderShield
+            KinClause
           </span>
         </Link>
         <div className="flex items-center gap-3">
