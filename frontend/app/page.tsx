@@ -72,8 +72,8 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      <main className="relative z-10 snap-y snap-mandatory">
-        <section id="home" className={`${styles.cinematicSection} flex min-h-screen snap-start flex-col items-center justify-center px-6 py-[120px] text-center`}>
+      <main className="relative z-10">
+        <section id="home" className={`${styles.cinematicSection} flex min-h-screen flex-col items-center justify-center px-6 py-[120px] text-center`}>
           <h1
             className={`animate-fade-rise max-w-7xl font-normal leading-[0.95] tracking-[-2.46px] ${
               elderMode ? "text-6xl sm:text-7xl md:text-8xl" : "text-5xl sm:text-7xl md:text-8xl"
@@ -110,7 +110,7 @@ export default function LandingPage() {
           </a>
         </section>
 
-        <section id="dashboard" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28`}>
+        <section id="dashboard" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl items-center px-6 py-28`}>
           <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[0.95fr_1.05fr]">
             <div className={`${styles.glassPanel} p-8 md:p-10`}>
               <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Dashboard</p>
@@ -143,7 +143,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="how-it-works" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28`}>
+        <section id="how-it-works" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl items-center px-6 py-28`}>
           <div className="w-full">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">How it works</p>
             <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -161,7 +161,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="accessibility" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl snap-start items-center px-6 py-28`}>
+        <section id="accessibility" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl items-center px-6 py-28`}>
           <div className={`${styles.glassPanel} mx-auto max-w-4xl p-8 text-center md:p-12`}>
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Accessibility</p>
             <h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Designed for people who need clarity most.</h2>
@@ -171,7 +171,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="reach-us" className={`${styles.cinematicSection} flex min-h-screen snap-start items-center justify-center px-6 py-28 text-center`}>
+        <section id="reach-us" className={`${styles.cinematicSection} flex min-h-screen items-center justify-center px-6 py-28 text-center`}>
           <div className={`${styles.glassPanel} max-w-3xl p-8 md:p-12`}>
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Reach Us</p>
             <h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Ready for the live demo.</h2>
@@ -185,5 +185,20 @@ export default function LandingPage() {
         </section>
       </main>
     </div>
+  );
+}
+
+export function SiteFooter({ elderMode }: { elderMode: boolean }) {
+  return (
+    <footer className="border-t border-line bg-paper px-6 py-10 text-center md:px-12">
+      <div className="mx-auto max-w-3xl space-y-4">
+        <p className={`text-muted ${elderMode ? "text-lg font-semibold text-ink" : "text-sm"}`}>
+          © 2026 ElderShield Project · Created for LingHacks VII
+        </p>
+        <p className={`mx-auto leading-relaxed text-faint ${elderMode ? "text-base text-ink" : "text-xs"}`}>
+          <strong className="text-muted">Important:</strong> ElderShield is not a lawyer and does not provide legal advice. It is an educational tool that uses computational linguistics to highlight potential risks and suggest questions to ask before you sign.
+        </p>
+      </div>
+    </footer>
   );
 }
