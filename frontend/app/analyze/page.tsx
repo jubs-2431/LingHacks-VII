@@ -32,14 +32,7 @@ export default function AnalyzePage() {
     setError(null);
     try {
       const results = await analyzeText(text, documentType, pages);
-      saveAnalysisSession({
-        text,
-        results,
-        extractionWarnings,
-        pages,
-        filename,
-        reportId: null,
-      });
+      saveAnalysisSession({ text, results, extractionWarnings, pages, filename, reportId: null });
       router.push("/results");
     } catch (err: unknown) {
       console.error(err);
@@ -61,28 +54,20 @@ export default function AnalyzePage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-paper text-ink">
-      <video
-        ref={videoRef}
-        className="fixed inset-0 z-0 h-[130vh] w-full object-cover opacity-25"
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        onEnded={holdVideoOnFinalFrame}
-      >
+    <div className="relative min-h-screen overflow-hidden bg-background text-white">
+      <video ref={videoRef} className="fixed inset-0 z-0 h-[130vh] w-full object-cover opacity-45" autoPlay muted playsInline preload="auto" onEnded={holdVideoOnFinalFrame}>
         <source src={VIDEO_SRC} />
       </video>
-      <div className="pointer-events-none fixed inset-0 z-[1] bg-paper/90" />
-      <div className="pointer-events-none fixed inset-0 z-[2] bg-white/20" />
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-[#03131d]/78" />
+      <div className="pointer-events-none fixed inset-0 z-[2] bg-black/10" />
 
       <nav className="fixed inset-x-0 top-0 z-30 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 md:px-8">
-        <Link href="/" className="keep-color text-3xl tracking-tight text-ink" style={{ fontFamily: "var(--font-display), serif" }}>
+        <Link href="/" className="keep-color text-3xl tracking-tight text-white" style={{ fontFamily: "var(--font-display), serif" }}>
           ElderShield<sup className="text-xs">®</sup>
         </Link>
         <div className="flex items-center gap-3">
           <ElderModeToggle />
-          <Link href="/" className="rounded-full border border-line bg-surface/90 px-5 py-2.5 text-sm font-medium text-ink shadow-sm transition-colors hover:border-shield hover:text-shield">
+          <Link href="/" className="liquid-glass keep-color rounded-full px-5 py-2.5 text-sm font-medium text-white transition-transform hover:scale-[1.03]">
             Home
           </Link>
         </div>
@@ -90,58 +75,39 @@ export default function AnalyzePage() {
 
       <main className="relative z-10 px-6 pb-20 pt-32 md:px-12 md:pt-36">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-          <section className="space-y-8 text-ink">
-            <Link
-              href="/"
-              className={`inline-flex items-center gap-2 rounded-full border border-line bg-surface/90 px-5 py-2.5 font-medium text-shield shadow-sm transition-colors hover:border-shield-dark hover:text-shield-dark ${
-                elderMode ? "text-xl" : "text-sm"
-              }`}
-            >
+          <section className="keep-color space-y-8 text-white">
+            <Link href="/" className={`liquid-glass inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-medium text-white transition-transform hover:scale-[1.03] ${elderMode ? "text-xl" : "text-sm"}`}>
               <ArrowLeft className={`keep-color ${elderMode ? "h-6 w-6" : "h-4 w-4"}`} />
               <span>Back to home</span>
             </Link>
 
             <div className="space-y-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-faint">
-                Document check
-              </p>
-              <h1 className="max-w-3xl font-serif text-5xl leading-[0.98] tracking-[-0.03em] text-ink md:text-7xl">
-                Check the parts that matter before signing.
-              </h1>
-              <p className={`max-w-2xl leading-8 text-muted ${elderMode ? "text-2xl text-ink" : "text-lg"}`}>
-                Upload a lease, form, bill, contract, or policy. ElderShield points out fees, deadlines, waivers, and questions worth asking.
+              <p className="keep-color text-sm font-semibold uppercase tracking-[0.3em] text-slate-300">Document check</p>
+              <h1 className="keep-color max-w-3xl font-serif text-5xl leading-[0.98] tracking-[-0.03em] text-white md:text-7xl">Check the parts that matter before signing.</h1>
+              <p className={`keep-color max-w-2xl leading-8 text-slate-200 ${elderMode ? "text-2xl" : "text-lg"}`}>
+                Upload a file or paste text. ElderShield points out fees, deadlines, waivers, and questions worth asking.
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                ["01", "Upload"],
-                ["02", "Review"],
-                ["03", "Ask"],
-              ].map(([number, label]) => (
-                <div key={number} className="rounded-2xl border border-line bg-surface/90 p-4 shadow-sm">
-                  <span className="text-xs font-semibold tracking-[0.24em] text-faint">{number}</span>
-                  <p className={`mt-5 font-serif leading-none text-ink ${elderMode ? "text-3xl" : "text-2xl"}`}>
-                    {label}
-                  </p>
+              {[["01", "Upload"], ["02", "Review"], ["03", "Ask"]].map(([number, label]) => (
+                <div key={number} className="rounded-2xl border border-white/15 bg-white/8 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
+                  <span className="keep-color text-xs font-semibold tracking-[0.24em] text-slate-300">{number}</span>
+                  <p className={`keep-color mt-5 font-serif leading-none text-white ${elderMode ? "text-3xl" : "text-2xl"}`}>{label}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-line bg-surface/90 p-2 shadow-xl shadow-black/10 backdrop-blur-sm">
+          <section className="rounded-[2rem] border border-white/20 bg-white/10 p-2 shadow-[0_50px_160px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <div className="rounded-[1.6rem] border border-line bg-[#fffdf7] p-6 text-ink shadow-inner md:p-8">
               <div className="mb-6 flex items-start gap-3 border-b border-line pb-5">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-shield text-white">
                   <ShieldCheck className="keep-color h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-3xl font-medium tracking-[-0.01em] text-ink">
-                    Check a document
-                  </h2>
-                  <p className={`mt-1 text-muted ${elderMode ? "text-lg text-ink" : "text-sm"}`}>
-                    Upload a file or paste text. Nothing is saved unless you choose to save a report later.
-                  </p>
+                  <h2 className="font-serif text-3xl font-medium tracking-[-0.01em] text-ink">Check a document</h2>
+                  <p className={`mt-1 text-muted ${elderMode ? "text-lg text-ink" : "text-sm"}`}>Upload a file or paste text. Nothing is saved unless you choose to save a report later.</p>
                 </div>
               </div>
 
