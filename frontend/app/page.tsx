@@ -30,9 +30,7 @@ const navItems = [
 const featureCards = [
   ["Clause lens", "Rights waivers, money traps, deadlines, and data-sharing language are pulled into focus."],
   ["Source trace", "Each explanation stays attached to the exact original phrase so the user can verify it."],
-  ["Plain-English layer", "Dense legal phrasing becomes readable explanations without hiding the source text."],
   ["Family checklist", "The final output becomes a set of questions to ask before signing or escalating."],
-  ["Elder Mode", "Larger text, stronger contrast, and calmer layouts are built into the product flow."],
 ];
 
 const chapters = [
@@ -110,7 +108,7 @@ export default function LandingPage() {
   const { scrollYProgress: scrollyProgress } = useScroll({ target: scrollyRef, offset: ["start start", "end end"] });
   const { scrollYProgress: featureProgress } = useScroll({ target: featuresRef, offset: ["start start", "end end"] });
 
-  const horizontalX = useTransform(featureProgress, [0, 1], ["72vw", "-168vw"]);
+  const horizontalX = useTransform(featureProgress, [0, 1], ["48vw", "-78vw"]);
   const sequenceScale = useTransform(scrollyProgress, [0, 0.5, 1], [0.92, 1.06, 0.96]);
   const sequenceOpacity = useTransform(scrollyProgress, [0, 0.08, 0.9, 1], [0, 1, 1, 0.2]);
   const titleOpacity = useTransform(scrollyProgress, [0, 0.08, 0.86, 1], [0, 1, 1, 0]);
@@ -161,7 +159,7 @@ export default function LandingPage() {
             <div className={styles.heroCopy}>
               <Reveal><h1 className={`max-w-7xl font-normal leading-[0.95] tracking-[-2.46px] ${elderMode ? "text-6xl sm:text-7xl md:text-8xl" : "text-5xl sm:text-7xl md:text-8xl"}`} style={{ fontFamily: "var(--font-display), serif" }}>Where <em className="not-italic text-muted-foreground">clarity</em> rises <em className="not-italic text-muted-foreground">through the fine print.</em></h1></Reveal>
               <Reveal className="mx-auto mt-8 max-w-2xl"><p className={`leading-relaxed text-muted-foreground ${elderMode ? "text-2xl" : "text-base sm:text-lg"}`}>ElderShield turns complex legal documents into plain-language risk maps for seniors, families, and anyone who wants to understand what they are signing before it matters.</p></Reveal>
-              <Reveal className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row"><a href="#signal" onClick={(event) => handleAnchorClick(event, "signal")} className={`liquid-glass rounded-full text-foreground transition-transform duration-150 hover:scale-[1.03] ${elderMode ? "px-16 py-6 text-2xl" : "px-14 py-5 text-base"}`}>Enter the story</a><span className="text-sm text-muted-foreground">The people video keeps moving · scroll controls the evidence layer</span></Reveal>
+              <Reveal className="mt-12 flex justify-center"><a href="#signal" onClick={(event) => handleAnchorClick(event, "signal")} className={`liquid-glass rounded-full text-foreground transition-transform duration-150 hover:scale-[1.03] ${elderMode ? "px-16 py-6 text-2xl" : "px-14 py-5 text-base"}`}>Enter the story</a></Reveal>
             </div>
           </div>
           <div className={styles.chapterTextStack}>{chapters.map(([number, title, body]) => <Reveal key={number} className={styles.chapterPanel}><span>{number}</span><h2>{title}</h2><p>{body}</p></Reveal>)}</div>
@@ -171,7 +169,7 @@ export default function LandingPage() {
 
         <section id="trace" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl items-center px-6 py-28`}><div className="w-full"><Reveal className="max-w-3xl"><p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Provenance trace</p><h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Not boxes. A visible reasoning trail.</h2></Reveal><div className={styles.traceGrid}>{traceRows.map(([label, title, body], index) => <Reveal key={label} className={styles.traceNode}><span>{String(index + 1).padStart(2, "0")}</span><p>{label}</p><h3>{title}</h3><small>{body}</small></Reveal>)}</div></div></section>
 
-        <section id="features" ref={featuresRef} className={styles.horizontalSection}><div className={styles.horizontalSticky}><div className={styles.horizontalIntro}><p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Core features</p><h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Slide through the system.</h2></div><motion.div className={styles.horizontalTrack} style={{ x: horizontalX }}>{featureCards.map(([title, body], index) => <article key={title} className={styles.featureCard}><span>0{index + 1}</span><h3>{title}</h3><p>{body}</p></article>)}</motion.div></div></section>
+        <section id="features" ref={featuresRef} className={styles.horizontalSection}><div className={styles.horizontalSticky}><div className={styles.horizontalIntro}><p className={styles.featureEyebrow}>Core features</p><h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Slide through the system.</h2></div><motion.div className={styles.horizontalTrack} style={{ x: horizontalX }}>{featureCards.map(([title, body], index) => <article key={title} className={styles.featureCard}><span>0{index + 1}</span><h3>{title}</h3><p>{body}</p></article>)}</motion.div></div></section>
         <section id="access" className={`${styles.cinematicSection} mx-auto flex min-h-screen max-w-7xl items-center px-6 py-28`}><Reveal className={`${styles.editorPanel} ${styles.depthCard} mx-auto max-w-4xl p-8 text-center md:p-12`}><p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Accessibility</p><h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Designed for people who need clarity most.</h2><p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">Elder Mode increases text size and contrast, explanations stay short, and the final checklist is easy to print or read aloud.</p></Reveal></section>
         <section id="demo" className={`${styles.cinematicSection} flex min-h-screen items-center justify-center px-6 py-28 text-center`}><Reveal className={`${styles.editorPanel} ${styles.depthCard} max-w-3xl p-8 md:p-12`}><p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Live demo</p><h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Ready to test the analyzer.</h2><p className="mt-6 text-lg leading-8 text-muted-foreground">The landing page tells the story. The analyzer proves the workflow.</p><Link href="/analyze" className="liquid-glass mt-8 inline-flex rounded-full px-10 py-4 text-foreground transition-transform hover:scale-[1.03]">Analyze Document</Link></Reveal></section>
       </main>
