@@ -9,6 +9,21 @@ import styles from "./page.module.css";
 
 const VIDEO_SRC = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4";
 
+const featureCards = [
+  [
+    "Clause lens",
+    "KinClause separates important document language from the surrounding text so families can focus on fees, deadlines, waivers, renewal terms, and unclear obligations.",
+  ],
+  [
+    "Source trace",
+    "Each note stays tied to the original words. Users can see the phrase that triggered the warning instead of trusting a floating summary.",
+  ],
+  [
+    "Action checklist",
+    "The review turns into practical next steps: what to ask, what dates to watch, what to confirm, and when to get help before signing.",
+  ],
+];
+
 export default function LandingPage() {
   const { elderMode } = useAccessibility();
   const pageRef = useRef<HTMLDivElement | null>(null);
@@ -63,18 +78,26 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-32 md:px-12">
-          <div className="mx-auto mb-16 max-w-3xl text-center">
+        <section id="features" className="relative z-10 mx-auto max-w-7xl px-6 py-32 md:px-12">
+          <div className="mx-auto mb-16 max-w-3xl text-center md:mb-24">
             <p className="mb-4 text-sm font-bold uppercase tracking-widest text-amber-500">Core features</p>
             <h2 className="font-serif text-5xl leading-tight text-white md:text-7xl">How KinClause works.</h2>
+            <p className="mt-6 text-xl text-slate-300">Scroll down through the cards to see the review flow.</p>
           </div>
-          <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
-            {["Highlight", "Trace", "Ask"].map((title, index) => (
-              <article key={title} className="rounded-3xl border border-white/20 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
+          <div className="mx-auto flex max-w-4xl flex-col gap-12">
+            {featureCards.map(([title, body], index) => (
+              <motion.article
+                key={title}
+                initial={{ opacity: 0, y: 80, scale: 0.97 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, amount: 0.35 }}
+                transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                className="rounded-3xl border border-white/20 bg-white/5 p-8 shadow-2xl backdrop-blur-xl transition-all hover:border-white/30 hover:bg-white/10 md:p-12"
+              >
                 <span className="text-sm font-bold tracking-widest text-amber-500">0{index + 1}</span>
-                <h3 className="mt-4 font-serif text-3xl text-white">{title}</h3>
-                <p className="mt-4 text-lg leading-relaxed text-slate-300">Simple steps for reviewing the parts that need extra attention.</p>
-              </article>
+                <h3 className="mt-4 font-serif text-3xl text-white md:text-5xl">{title}</h3>
+                <p className="mt-4 text-lg leading-relaxed text-slate-300">{body}</p>
+              </motion.article>
             ))}
           </div>
         </section>
