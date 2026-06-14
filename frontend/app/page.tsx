@@ -110,7 +110,7 @@ export default function LandingPage() {
   const { scrollYProgress: scrollyProgress } = useScroll({ target: scrollyRef, offset: ["start start", "end end"] });
   const { scrollYProgress: featureProgress } = useScroll({ target: featuresRef, offset: ["start start", "end end"] });
 
-  const horizontalX = useTransform(featureProgress, [0, 1], ["18%", "-66%"]);
+  const horizontalX = useTransform(featureProgress, [0, 1], ["72vw", "-168vw"]);
   const sequenceScale = useTransform(scrollyProgress, [0, 0.5, 1], [0.92, 1.06, 0.96]);
   const sequenceOpacity = useTransform(scrollyProgress, [0, 0.08, 0.9, 1], [0, 1, 1, 0.2]);
   const titleOpacity = useTransform(scrollyProgress, [0, 0.08, 0.86, 1], [0, 1, 1, 0]);
