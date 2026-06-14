@@ -40,13 +40,13 @@ export default function LandingPage() {
   };
 
   return (
-    <div ref={pageRef} className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+    <div ref={pageRef} className="home-elder-readable relative min-h-screen overflow-x-hidden bg-background text-foreground">
       <motion.video ref={videoRef} className="fixed inset-0 z-0 h-[130vh] w-full object-cover" autoPlay muted playsInline preload="auto" onEnded={holdVideoOnFinalFrame} style={{ y: bgY }}>
         <source src={VIDEO_SRC} />
       </motion.video>
       <div className="pointer-events-none fixed inset-0 z-[1] bg-black/25" aria-hidden />
 
-      <nav className="fixed inset-x-0 top-0 z-30 mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
+      <nav className="home-top-nav fixed inset-x-0 top-0 z-30 mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
         <Link href="/" className="text-3xl tracking-tight text-foreground" style={{ fontFamily: "var(--font-display), serif" }}>
           KinClause<sup className="text-xs">®</sup>
         </Link>
@@ -92,7 +92,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: false, amount: 0.35 }}
                 transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-                className="rounded-3xl border border-white/20 bg-white/5 p-8 shadow-2xl backdrop-blur-xl transition-all hover:border-white/30 hover:bg-white/10 md:p-12"
+                className="feature-scroll-card rounded-3xl border border-white/20 bg-white/5 p-8 shadow-2xl backdrop-blur-xl transition-all hover:border-white/30 hover:bg-white/10 md:p-12"
               >
                 <span className="text-sm font-bold tracking-widest text-amber-500">0{index + 1}</span>
                 <h3 className="mt-4 font-serif text-3xl text-white md:text-5xl">{title}</h3>
