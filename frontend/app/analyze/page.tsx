@@ -105,7 +105,7 @@ export default function AnalyzePage() {
                 ["02", "Trace source"],
                 ["03", "Ask clearly"],
               ].map(([number, label]) => (
-                <div key={number} className="rounded-2xl border border-white/15 bg-white/8 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
+                <div key={number} className="rounded-2xl border border-white/20 bg-white/10 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
                   <span className="keep-color text-xs font-semibold tracking-[0.28em] text-slate-300">{number}</span>
                   <p className={`keep-color mt-5 font-serif leading-none text-white ${elderMode ? "text-3xl" : "text-2xl"}`}>
                     {label}
@@ -115,7 +115,7 @@ export default function AnalyzePage() {
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-white/20 bg-white/12 p-2 shadow-[0_50px_160px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+          <section className="rounded-[2rem] border border-white/20 bg-white/10 p-2 shadow-[0_50px_160px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
             <div className="rounded-[1.6rem] border border-white/20 bg-[#fffdf7] p-6 text-ink shadow-inner md:p-8">
               <div className="mb-6 flex items-start gap-3 border-b border-line pb-5">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-shield text-white">
