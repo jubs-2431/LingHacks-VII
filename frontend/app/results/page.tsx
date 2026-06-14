@@ -38,17 +38,19 @@ export default function ResultsPage() {
     }
 
     try {
-      setText(storedText);
-      const parsedResults = JSON.parse(storedResults) as AnalysisResult;
-      setResults(parsedResults);
+      queueMicrotask(() => {
+        const parsedResults = JSON.parse(storedResults) as AnalysisResult;
+        setText(storedText);
+        setResults(parsedResults);
 
-      if (parsedResults.clauses && parsedResults.clauses.length > 0) {
-        const sorted = [...parsedResults.clauses].sort((a, b) => {
-          const severityWeight = { high: 3, medium: 2, low: 1 };
-          return severityWeight[b.severity] - severityWeight[a.severity];
-        });
-        setSelectedClause(sorted[0]);
-      }
+        if (parsedResults.clauses && parsedResults.clauses.length > 0) {
+          const sorted = [...parsedResults.clauses].sort((a, b) => {
+            const severityWeight = { high: 3, medium: 2, low: 1 };
+            return severityWeight[b.severity] - severityWeight[a.severity];
+          });
+          setSelectedClause(sorted[0]);
+        }
+      });
     } catch (error) {
       console.error(error);
       sessionStorage.removeItem("analysis_results");
@@ -137,24 +139,34 @@ export default function ResultsPage() {
               </div>
             </div>
 
-            <div className="space-y-6 lg:col-span-5">
-              <div id="explanation-panel" className="scroll-mt-24 space-y-4">
-                <h3 className={`font-serif font-medium text-ink ${elderMode ? "text-2xl" : "text-xl"}`}>
-                  Plain-English explanation
-                </h3>
-                {selectedClause ? (
-                  <RiskCard clause={selectedClause} isSelected={true} />
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-line bg-surface px-6 py-16 text-center">
-                    <p className={`text-muted ${elderMode ? "text-xl" : "text-base"}`}>
-                      Click a highlighted phrase in the document to see its explanation here.
-                    </p>
-                  </div>
-                )}
-              </div>
+            <div className="lg:col-span-5">
+              <div className="features-side-card space-y-6 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-2">
+                <div id="explanation-panel" className="scroll-mt-24 space-y-4">
+                  <h3 className={`font-serif font-medium text-ink ${elderMode ? "text-2xl" : "text-xl"}`}>
+                    Plain-English explanation
+                  </h3>
+                  {selectedClause ? (
+                    <div className={elderMode ? "rounded-2xl border-2 border-slate-950 bg-white p-1.5" : ""}>
+                      <RiskCard clause={selectedClause} isSelected={true} />
+                    </div>
+                  ) : (
+                    <div
+                      className={`rounded-2xl border border-dashed px-6 py-16 text-center ${
+                        elderMode
+                          ? "border-2 border-slate-950 bg-white text-slate-950"
+                          : "border-line bg-surface text-muted"
+                      }`}
+                    >
+                      <p className={elderMode ? "text-xl font-semibold" : "text-base"}>
+                        Click a highlighted phrase in the document to see its explanation here.
+                      </p>
+                    </div>
+                  )}
+                </div>
 
-              <div className="no-print">
-                <Checklist items={results.checklist} />
+                <div className="no-print">
+                  <Checklist items={results.checklist} />
+                </div>
               </div>
             </div>
           </div>
