@@ -19,21 +19,16 @@ const navItems = [
 const featureCards = [
   [
     "Clause lens",
-    "Scans for legal phrases that commonly hide risk: arbitration, class-action waivers, automatic renewal, late fees, cancellation windows, and vague obligations. The tool slows down the exact language that deserves attention.",
+    "A scroll-driven evidence layer separates risky legal language from the surrounding document. ElderShield scans for arbitration, class-action waivers, automatic renewal, late fees, cancellation windows, and vague obligations, then slows down the exact words that deserve attention.",
   ],
   [
     "Source trace",
-    "Keeps every explanation tied to the original sentence. Users see the trigger phrase, why it matters, and where to verify it instead of receiving a disconnected AI summary.",
+    "Each warning becomes a source-linked explanation. Users see the original trigger phrase, why it matters, and where to verify it instead of receiving a disconnected AI summary.",
   ],
   [
     "Action checklist",
-    "Turns confusing clauses into next steps: what to ask, what dates to watch, what to confirm, and when to get help before signing.",
+    "The output becomes practical before signing: what to ask, what dates to watch, what to confirm, and when to get help from a family member, caregiver, administrator, or lawyer.",
   ],
-];
-
-const chapters = [
-  ["01", "Fine print becomes visible", "A scroll-driven evidence layer separates risky language from the surrounding document."],
-  ["02", "The output becomes useful", "Each warning becomes a source-linked explanation and a practical question to ask before signing."],
 ];
 
 function makeFrame(index: number) {
@@ -110,12 +105,11 @@ export default function LandingPage() {
       </nav>
 
       <main className="relative z-10">
-        <section id="story" ref={storyRef} className={`${styles.scrollyChapter} min-h-[260vh]`}>
+        <section id="story" ref={storyRef} className={`${styles.scrollyChapter} min-h-[220vh]`}>
           <div className={styles.stickyScene}>
             <motion.div className={styles.sequenceStage} style={{ scale: sequenceScale, opacity: sequenceOpacity }}><img src={frames[frameIndex]} alt="Scroll-controlled ElderShield document analysis frame" className={styles.sequenceImage} draggable={false} /><div className={styles.frameReadout}>FRAME {String(frameIndex + 1).padStart(2, "0")} / {FRAME_COUNT}</div></motion.div>
             <div className={styles.heroCopy}><Reveal><h1 className={`max-w-7xl font-normal leading-[0.95] tracking-[-2.46px] ${elderMode ? "text-6xl sm:text-7xl md:text-8xl" : "text-5xl sm:text-7xl md:text-8xl"}`} style={{ fontFamily: "var(--font-display), serif" }}>Where <em className="not-italic text-muted-foreground">clarity</em> rises <em className="not-italic text-muted-foreground">through the fine print.</em></h1></Reveal><Reveal className="mx-auto mt-8 max-w-2xl"><p className={`leading-relaxed text-muted-foreground ${elderMode ? "text-2xl" : "text-base sm:text-lg"}`}>A cinematic legal-document explainer for seniors and families: find risk, trace it to the source, and know what to ask before signing.</p></Reveal><Reveal className="mt-12 flex justify-center"><a href="#features" onClick={(event) => handleAnchorClick(event, "features")} className={`liquid-glass rounded-full text-foreground transition-transform duration-150 hover:scale-[1.03] ${elderMode ? "px-16 py-6 text-2xl" : "px-14 py-5 text-base"}`}>Explore features</a></Reveal></div>
           </div>
-          <div className={styles.chapterTextStack}>{chapters.map(([number, title, body]) => <Reveal key={number} className={styles.chapterPanel}><span>{number}</span><h2>{title}</h2><p>{body}</p></Reveal>)}</div>
         </section>
 
         <section id="features" ref={featuresRef} className={styles.horizontalSection}><div className={styles.horizontalSticky}><div className={styles.horizontalIntro}><p className={styles.featureEyebrow}>Core features</p><h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Slide through the system.</h2><p className={styles.featureSubcopy}>This section pins. The first card starts fully off-screen to the right, scroll moves the cards left, then the page continues downward.</p></div><motion.div className={styles.horizontalTrack} style={{ x: horizontalX }}>{featureCards.map(([title, body], index) => <article key={title} className={styles.featureCard}><span>0{index + 1}</span><h3>{title}</h3><p>{body}</p></article>)}</motion.div></div></section>
