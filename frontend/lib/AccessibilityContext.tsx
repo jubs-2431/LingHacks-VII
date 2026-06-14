@@ -15,7 +15,7 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
   useEffect(() => {
     const saved = localStorage.getItem("elderMode");
     if (saved === "true") {
-      setElderMode(true);
+      queueMicrotask(() => setElderMode(true));
     }
   }, []);
 
