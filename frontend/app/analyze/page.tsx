@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAccessibility } from "../../lib/AccessibilityContext";
 import SiteHeader from "../../components/SiteHeader";
-import { SiteFooter } from "../page";
+import SiteFooter from "../../components/SiteFooter";
 import UploadBox from "../../components/UploadBox";
 import { analyzeText } from "../../lib/api";
 import { AlertCircle, ArrowLeft } from "lucide-react";
@@ -27,7 +27,9 @@ export default function AnalyzePage() {
     } catch (err) {
       console.error(err);
       setError(
-        "We couldn't connect to the analysis engine. Please make sure the FastAPI backend is running on http://localhost:8000.",
+        err instanceof Error
+          ? err.message
+          : "We couldn't connect to the analysis engine. Please make sure the FastAPI backend is running on http://localhost:8000.",
       );
     } finally {
       setLoading(false);
@@ -35,7 +37,7 @@ export default function AnalyzePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-paper text-ink">
       <SiteHeader />
 
       <main className="flex-1 px-6 py-10 md:px-12">
