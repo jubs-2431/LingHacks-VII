@@ -36,11 +36,7 @@ export default function AnalyzePage() {
       router.push("/results");
     } catch (err: unknown) {
       console.error(err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "We couldn't connect to the analysis engine. Please make sure the FastAPI backend is running on http://localhost:8000.",
-      );
+      setError(err instanceof Error ? err.message : "The analysis engine did not respond. Make sure the backend is running on http://localhost:8000.");
     } finally {
       setLoading(false);
     }
@@ -63,7 +59,7 @@ export default function AnalyzePage() {
 
       <nav className="fixed inset-x-0 top-0 z-30 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 md:px-8">
         <Link href="/" className="keep-color text-3xl tracking-tight text-white" style={{ fontFamily: "var(--font-display), serif" }}>
-          ElderShield<sup className="text-xs">®</sup>
+          KinClause<sup className="text-xs">®</sup>
         </Link>
         <div className="flex items-center gap-3">
           <ElderModeToggle />
@@ -85,7 +81,7 @@ export default function AnalyzePage() {
               <p className="keep-color text-sm font-semibold uppercase tracking-[0.3em] text-slate-300">Document check</p>
               <h1 className="keep-color max-w-3xl font-serif text-5xl leading-[0.98] tracking-[-0.03em] text-white md:text-7xl">Check the parts that matter before signing.</h1>
               <p className={`keep-color max-w-2xl leading-8 text-slate-200 ${elderMode ? "text-2xl" : "text-lg"}`}>
-                Upload a file or paste text. ElderShield points out fees, deadlines, waivers, and questions worth asking.
+                Upload a file or paste text. KinClause points out important details and turns them into clear questions.
               </p>
             </div>
 
