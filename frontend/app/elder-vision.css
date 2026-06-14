@@ -1,0 +1,91 @@
+.elder-mode {
+  --elder-bg: #fff7df;
+  --elder-surface: #fffdf4;
+  --elder-text: #111111;
+  --elder-muted: #242424;
+  --elder-border: #111111;
+  --elder-accent: #005f5b;
+  --elder-focus: #ffbf00;
+  background-color: var(--elder-bg) !important;
+  color: var(--elder-text) !important;
+  font-size: 1.32rem !important;
+  line-height: 1.9 !important;
+}
+
+.elder-mode p,
+.elder-mode span,
+.elder-mode label,
+.elder-mode li,
+.elder-mode h1,
+.elder-mode h2,
+.elder-mode h3,
+.elder-mode h4,
+.elder-mode a,
+.elder-mode button,
+.elder-mode select,
+.elder-mode textarea,
+.elder-mode input {
+  color: var(--elder-text) !important;
+}
+
+.elder-mode .text-muted,
+.elder-mode .text-muted-foreground,
+.elder-mode .text-faint {
+  color: var(--elder-muted) !important;
+}
+
+.elder-mode .bg-paper,
+.elder-mode .bg-surface {
+  background-color: var(--elder-surface) !important;
+}
+
+.elder-mode .border-line {
+  border-color: var(--elder-border) !important;
+}
+
+.elder-mode select,
+.elder-mode textarea,
+.elder-mode input {
+  background-color: #ffffff !important;
+  border: 3px solid var(--elder-border) !important;
+  color: var(--elder-text) !important;
+}
+
+.elder-mode button:focus-visible,
+.elder-mode a:focus-visible,
+.elder-mode input:focus-visible,
+.elder-mode select:focus-visible,
+.elder-mode textarea:focus-visible {
+  outline: 4px solid var(--elder-focus) !important;
+  outline-offset: 3px !important;
+}
+
+.elder-mode .keep-color,
+.elder-mode .keep-color * {
+  color: inherit !important;
+}
+
+.elder-mode nav.fixed {
+  color: #f8fafc !important;
+  background: rgba(2, 12, 19, 0.86) !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.42) !important;
+}
+
+.elder-mode nav.fixed a,
+.elder-mode nav.fixed span,
+.elder-mode nav.fixed button,
+.elder-mode nav.fixed svg {
+  color: #f8fafc !important;
+}
+
+.elder-mode .analyze-submit {
+  background-color: var(--elder-accent) !important;
+  border: 3px solid var(--elder-border) !important;
+  box-shadow: none !important;
+}
+
+.elder-mode .analyze-submit,
+.elder-mode .analyze-submit span,
+.elder-mode .analyze-submit svg {
+  color: #ffffff !important;
+}
