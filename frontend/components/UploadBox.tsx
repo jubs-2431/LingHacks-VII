@@ -7,7 +7,6 @@ import { DocumentType, PageSpan } from "../lib/types";
 import { FileText, Upload, AlertCircle, RefreshCw, ScanText } from "lucide-react";
 import { extractTextFromDocument } from "../lib/api";
 
-
 interface UploadBoxProps {
   onAnalyze: (
     text: string,
@@ -101,8 +100,8 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
     setPages([]);
   };
 
-  const labelClass = `font-semibold text-white ${elderMode ? "text-xl" : "text-sm"}`;
-  const stepNum = "grid h-6 w-6 shrink-0 place-items-center rounded-full bg-amber-500 text-xs font-bold text-slate-900";
+  const labelClass = `font-semibold text-ink ${elderMode ? "text-xl" : "text-sm"}`;
+  const stepNum = "grid h-6 w-6 shrink-0 place-items-center rounded-full bg-shield text-xs font-bold text-white";
 
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-7">
@@ -115,7 +114,7 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
           id="doc-type"
           value={docType}
           onChange={(event) => setDocType(event.target.value as DocumentType)}
-          className={`w-full rounded-xl border border-slate-700 bg-slate-900/60 text-white shadow-sm transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30 ${
+          className={`w-full rounded-xl border border-line bg-white text-ink shadow-sm transition-all focus:border-shield focus:ring-2 focus:ring-shield/30 ${
             elderMode ? "h-16 p-4 text-xl" : "h-12 p-3 text-base"
           }`}
         >
@@ -135,43 +134,43 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
           <div
             {...getRootProps()}
             className={`flex min-h-[190px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center transition-all ${
-              isDragActive ? "border-amber-500 bg-amber-500/10" : "border-slate-700 bg-slate-900/40 hover:border-amber-500/50 hover:bg-slate-900/60"
+              isDragActive ? "border-shield bg-shield-soft" : "border-line bg-paper/50 hover:border-shield/50 hover:bg-paper"
             }`}
           >
             <input {...getInputProps()} />
             {extracting ? (
               <div className="flex flex-col items-center gap-2">
-                <RefreshCw className="keep-color h-9 w-9 animate-spin text-amber-500" />
-                <p className={`font-medium text-white ${elderMode ? "text-xl" : "text-sm"}`}>Reading document...</p>
+                <RefreshCw className="keep-color h-9 w-9 animate-spin text-shield" />
+                <p className={`font-medium text-ink ${elderMode ? "text-xl" : "text-sm"}`}>Reading document...</p>
               </div>
             ) : fileName ? (
               <div className="flex flex-col items-center gap-2">
-                {usedOcr ? <ScanText className="keep-color h-10 w-10 text-amber-400" /> : <FileText className="keep-color h-10 w-10 text-amber-400" />}
-                <p className={`break-all font-semibold text-amber-300 ${elderMode ? "text-lg" : "text-sm"}`}>{fileName}</p>
-                <p className={`text-slate-400 ${elderMode ? "text-lg" : "text-xs"}`}>
+                {usedOcr ? <ScanText className="keep-color h-10 w-10 text-shield" /> : <FileText className="keep-color h-10 w-10 text-shield" />}
+                <p className={`break-all font-semibold text-shield-dark ${elderMode ? "text-lg" : "text-sm"}`}>{fileName}</p>
+                <p className={`text-muted ${elderMode ? "text-lg" : "text-xs"}`}>
                   {usedOcr ? "Scanned text loaded with OCR." : "Text loaded - review it below."}
                 </p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <Upload className="keep-color h-9 w-9 text-slate-400" />
-                <p className={`font-semibold text-white ${elderMode ? "text-xl" : "text-base"}`}>Drag and drop a document</p>
-                <p className={`text-slate-400 ${elderMode ? "text-lg" : "text-xs"}`}>PDF, PNG, or JPEG up to 10 MB</p>
+                <Upload className="keep-color h-9 w-9 text-faint" />
+                <p className={`font-semibold text-ink ${elderMode ? "text-xl" : "text-base"}`}>Drag and drop a document</p>
+                <p className={`text-muted ${elderMode ? "text-lg" : "text-xs"}`}>PDF, PNG, or JPEG up to 10 MB</p>
               </div>
             )}
           </div>
 
-          <div className="flex flex-col justify-between rounded-xl border border-slate-700 bg-slate-900/40 p-6">
+          <div className="flex flex-col justify-between rounded-xl border border-line bg-white p-6">
             <div className="space-y-2">
-              <h3 className={`font-serif font-medium text-white ${elderMode ? "text-2xl" : "text-lg"}`}>No document handy?</h3>
-              <p className={`leading-relaxed text-slate-400 ${elderMode ? "text-lg" : "text-sm"}`}>
+              <h3 className={`font-serif font-medium text-ink ${elderMode ? "text-2xl" : "text-lg"}`}>No document handy?</h3>
+              <p className={`leading-relaxed text-muted ${elderMode ? "text-lg" : "text-sm"}`}>
                 Test waivers, automatic renewal, deadlines, data sharing, proof requirements, and discretionary language.
               </p>
             </div>
             <button
               type="button"
               onClick={loadSample}
-              className={`mt-4 w-full rounded-lg border border-amber-500/30 bg-amber-500/10 font-semibold text-amber-400 transition-colors hover:border-amber-500 ${
+              className={`mt-4 w-full rounded-lg border border-shield/30 bg-shield-soft font-semibold text-shield-dark transition-colors hover:border-shield ${
                 elderMode ? "p-4 text-lg" : "p-3 text-sm"
               }`}
             >
@@ -191,12 +190,12 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
             setPages([]);
           }}
           maxLength={200_000}
-          placeholder="Paste the contract, agreement, or official terms here..."
-          className={`min-h-[220px] w-full resize-y rounded-xl border border-slate-700 bg-slate-900/60 text-white shadow-sm transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30 ${
+          placeholder="Paste the document text here..."
+          className={`min-h-[220px] w-full resize-y rounded-xl border border-line bg-white text-ink shadow-sm transition-all focus:border-shield focus:ring-2 focus:ring-shield/30 ${
             elderMode ? "p-5 text-lg leading-relaxed" : "p-4 text-sm leading-relaxed"
           }`}
         />
-        <span className="text-right text-xs text-slate-500">{text.length.toLocaleString()} / 200,000 characters</span>
+        <span className="text-right text-xs text-faint">{text.length.toLocaleString()} / 200,000 characters</span>
       </div>
 
       {extractionWarnings.map((warning) => (
@@ -216,13 +215,13 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
       <button
         type="submit"
         disabled={isLoading || extracting}
-        className={`flex w-full items-center justify-center gap-3 rounded-xl bg-amber-500 font-semibold text-slate-900 shadow-lg shadow-amber-500/20 transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:shadow-none ${
+        className={`analyze-submit flex w-full items-center justify-center gap-3 rounded-xl bg-shield font-semibold text-white shadow-lg shadow-shield/20 transition-colors hover:bg-shield-dark disabled:cursor-not-allowed disabled:bg-faint disabled:shadow-none ${
           elderMode ? "py-5 text-2xl" : "py-4 text-lg"
         }`}
       >
         {isLoading ? (
           <>
-            <RefreshCw className="keep-color h-6 w-6 animate-spin" />
+            <RefreshCw className="h-6 w-6 animate-spin" />
             <span>Reading the fine print...</span>
           </>
         ) : (
