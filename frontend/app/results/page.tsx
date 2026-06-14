@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAccessibility } from "../../lib/AccessibilityContext";
 import SiteHeader from "../../components/SiteHeader";
-import { SiteFooter } from "../page";
+import SiteFooter from "../../components/SiteFooter";
 import ClauseHighlighter from "../../components/ClauseHighlighter";
 import RiskCard from "../../components/RiskCard";
 import Checklist from "../../components/Checklist";
@@ -37,16 +37,22 @@ export default function ResultsPage() {
       return;
     }
 
-    setText(storedText);
-    const parsedResults = JSON.parse(storedResults) as AnalysisResult;
-    setResults(parsedResults);
+    try {
+      setText(storedText);
+      const parsedResults = JSON.parse(storedResults) as AnalysisResult;
+      setResults(parsedResults);
 
-    if (parsedResults.clauses && parsedResults.clauses.length > 0) {
-      const sorted = [...parsedResults.clauses].sort((a, b) => {
-        const severityWeight = { high: 3, medium: 2, low: 1 };
-        return severityWeight[b.severity] - severityWeight[a.severity];
-      });
-      setSelectedClause(sorted[0]);
+      if (parsedResults.clauses && parsedResults.clauses.length > 0) {
+        const sorted = [...parsedResults.clauses].sort((a, b) => {
+          const severityWeight = { high: 3, medium: 2, low: 1 };
+          return severityWeight[b.severity] - severityWeight[a.severity];
+        });
+        setSelectedClause(sorted[0]);
+      }
+    } catch (error) {
+      console.error(error);
+      sessionStorage.removeItem("analysis_results");
+      router.push("/analyze");
     }
   }, [router]);
 
@@ -77,7 +83,7 @@ export default function ResultsPage() {
   const proofCount = results.category_counts["Proof Burden"] || 0;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-paper text-ink">
       <SiteHeader />
 
       <main className="flex-1 px-6 py-8 md:px-12">
@@ -94,7 +100,6 @@ export default function ResultsPage() {
             </Link>
           </div>
 
-          {/* Heading */}
           <div className="space-y-2">
             <h1 className="font-serif text-4xl font-medium tracking-[-0.01em] text-ink">
               What we found
@@ -104,7 +109,6 @@ export default function ResultsPage() {
             </p>
           </div>
 
-          {/* Stat cards */}
           <section className="grid grid-cols-2 gap-3 no-print lg:grid-cols-6">
             <StatCard icon={ShieldAlert} tone="red" label="High risk" value={highCount} elderMode={elderMode} />
             <StatCard icon={AlertTriangle} tone="amber" label="Medium" value={mediumCount} elderMode={elderMode} />
@@ -114,9 +118,7 @@ export default function ResultsPage() {
             <StatCard icon={Layers} tone="neutral" label="Proof reqs" value={proofCount} elderMode={elderMode} />
           </section>
 
-          {/* Highlighter + detail */}
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-            {/* Document */}
             <div className="space-y-4 lg:col-span-7">
               <h3 className={`font-serif font-medium text-ink ${elderMode ? "text-2xl" : "text-xl"}`}>
                 Your document, highlighted
@@ -135,7 +137,6 @@ export default function ResultsPage() {
               </div>
             </div>
 
-            {/* Explanation + checklist */}
             <div className="space-y-6 lg:col-span-5">
               <div id="explanation-panel" className="scroll-mt-24 space-y-4">
                 <h3 className={`font-serif font-medium text-ink ${elderMode ? "text-2xl" : "text-xl"}`}>
@@ -146,8 +147,7 @@ export default function ResultsPage() {
                 ) : (
                   <div className="rounded-2xl border border-dashed border-line bg-surface px-6 py-16 text-center">
                     <p className={`text-muted ${elderMode ? "text-xl" : "text-base"}`}>
-                      Click a highlighted phrase in the document to see its
-                      explanation here.
+                      Click a highlighted phrase in the document to see its explanation here.
                     </p>
                   </div>
                 )}
@@ -159,14 +159,12 @@ export default function ResultsPage() {
             </div>
           </div>
 
-          {/* Print-only checklist */}
           <div className="hidden space-y-8 pt-8 print:block">
             <h2 className="border-b-2 border-black pb-2 text-3xl font-extrabold text-black">
               ElderShield — Before You Sign Checklist
             </h2>
             <p className="text-lg font-semibold leading-relaxed text-black">
-              These questions were generated from the analysis of your document.
-              Discuss them before signing.
+              These questions were generated from the analysis of your document. Discuss them before signing.
             </p>
             <div className="rounded-lg border border-black p-6">
               <ul className="space-y-6">
@@ -181,8 +179,7 @@ export default function ResultsPage() {
               </ul>
             </div>
             <p className="border-t border-gray-400 pt-8 text-sm italic text-gray-700">
-              Disclaimer: ElderShield provides linguistic analysis for educational
-              purposes. It is not legal advice.
+              Disclaimer: ElderShield provides linguistic analysis for educational purposes. It is not legal advice.
             </p>
           </div>
         </div>
