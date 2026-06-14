@@ -37,7 +37,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`h-full ${inter.variable} ${instrumentSerif.variable}`}
     >
-      <body className="min-h-full bg-background text-foreground font-sans antialiased">
+      <body suppressHydrationWarning className="min-h-full bg-background text-foreground font-sans antialiased">
         <AuthProvider>
           <AccessibilityProvider>{children}</AccessibilityProvider>
         </AuthProvider>
