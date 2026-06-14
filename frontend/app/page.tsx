@@ -1,6 +1,6 @@
 "use client";
 
-import { type MouseEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { type MouseEvent, type ReactNode, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   motion,
@@ -63,7 +63,6 @@ function makeFrame(index: number) {
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 620">
     <defs>
       <linearGradient id="card" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,0.22)"/><stop offset="1" stop-color="rgba(255,255,255,0.045)"/></linearGradient>
-      <linearGradient id="risk" x1="0" x2="1"><stop offset="0" stop-color="rgba(255,255,255,0.92)"/><stop offset="1" stop-color="rgba(136,210,255,0.72)"/></linearGradient>
       <filter id="blurGlow"><feGaussianBlur stdDeviation="18" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     </defs>
     <rect width="920" height="620" fill="transparent" />
@@ -98,11 +97,9 @@ export default function LandingPage() {
   const pageRef = useRef<HTMLDivElement | null>(null);
   const scrollyRef = useRef<HTMLElement | null>(null);
   const featuresRef = useRef<HTMLElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const frames = useMemo(() => Array.from({ length: FRAME_COUNT }, (_, index) => makeFrame(index)), []);
   const [activeSection, setActiveSection] = useState(0);
   const [frameIndex, setFrameIndex] = useState(0);
-  const [videoReady, setVideoReady] = useState(false);
 
   const { scrollYProgress } = useScroll({ target: pageRef, offset: ["start start", "end end"] });
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 90, damping: 28, mass: 0.35 });
@@ -121,9 +118,6 @@ export default function LandingPage() {
 
   useMotionValueEvent(scrollyProgress, "change", (latest) => {
     setFrameIndex(Math.max(0, Math.min(FRAME_COUNT - 1, Math.round(latest * (FRAME_COUNT - 1)))));
-    const video = videoRef.current;
-    if (!video || !video.duration || !videoReady) return;
-    video.currentTime = Math.min(video.duration - 0.05, Math.max(0, latest * video.duration));
   });
 
   useMotionValueEvent(scrollYProgress, "change", () => {
@@ -139,19 +133,6 @@ export default function LandingPage() {
     setActiveSection(nearestIndex);
   });
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.pause();
-    video.currentTime = 0;
-    const onLoadedMetadata = () => {
-      video.pause();
-      setVideoReady(true);
-    };
-    video.addEventListener("loadedmetadata", onLoadedMetadata);
-    return () => video.removeEventListener("loadedmetadata", onLoadedMetadata);
-  }, []);
-
   const handleAnchorClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     event.preventDefault();
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -160,7 +141,7 @@ export default function LandingPage() {
   return (
     <div ref={pageRef} className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
       <motion.div className={styles.progressTop} style={{ scaleX: topProgressScale }} />
-      <motion.video ref={videoRef} className="fixed inset-0 z-0 h-[130vh] w-full object-cover" muted playsInline preload="auto" style={{ y: bgY }}><source src={VIDEO_SRC} /></motion.video>
+      <motion.video className="fixed inset-0 z-0 h-[130vh] w-full object-cover" autoPlay loop muted playsInline preload="auto" style={{ y: bgY }}><source src={VIDEO_SRC} /></motion.video>
       <motion.div className={styles.midground} style={{ y: midY }} aria-hidden><span /><span /><span /></motion.div>
       <div className="pointer-events-none fixed inset-0 z-[1] bg-black/20" aria-hidden />
       <motion.div className={styles.stickyProductTitle} style={{ opacity: titleOpacity, y: titleY }}>ElderShield / Evidence Engine</motion.div>
@@ -180,7 +161,7 @@ export default function LandingPage() {
             <div className={styles.heroCopy}>
               <Reveal><h1 className={`max-w-7xl font-normal leading-[0.95] tracking-[-2.46px] ${elderMode ? "text-6xl sm:text-7xl md:text-8xl" : "text-5xl sm:text-7xl md:text-8xl"}`} style={{ fontFamily: "var(--font-display), serif" }}>Where <em className="not-italic text-muted-foreground">clarity</em> rises <em className="not-italic text-muted-foreground">through the fine print.</em></h1></Reveal>
               <Reveal className="mx-auto mt-8 max-w-2xl"><p className={`leading-relaxed text-muted-foreground ${elderMode ? "text-2xl" : "text-base sm:text-lg"}`}>ElderShield turns complex legal documents into plain-language risk maps for seniors, families, and anyone who wants to understand what they are signing before it matters.</p></Reveal>
-              <Reveal className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row"><a href="#signal" onClick={(event) => handleAnchorClick(event, "signal")} className={`liquid-glass rounded-full text-foreground transition-transform duration-150 hover:scale-[1.03] ${elderMode ? "px-16 py-6 text-2xl" : "px-14 py-5 text-base"}`}>Enter the story</a><span className="text-sm text-muted-foreground">Scroll drives a generated frame sequence · reverse by scrolling up</span></Reveal>
+              <Reveal className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row"><a href="#signal" onClick={(event) => handleAnchorClick(event, "signal")} className={`liquid-glass rounded-full text-foreground transition-transform duration-150 hover:scale-[1.03] ${elderMode ? "px-16 py-6 text-2xl" : "px-14 py-5 text-base"}`}>Enter the story</a><span className="text-sm text-muted-foreground">The people video keeps moving · scroll controls the evidence layer</span></Reveal>
             </div>
           </div>
           <div className={styles.chapterTextStack}>{chapters.map(([number, title, body]) => <Reveal key={number} className={styles.chapterPanel}><span>{number}</span><h2>{title}</h2><p>{body}</p></Reveal>)}</div>
