@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAccessibility } from "../lib/AccessibilityContext";
 import SeverityBadge from "./SeverityBadge";
-import { Volume2, VolumeX, AlertTriangle, HelpCircle, Eye } from "lucide-react";
+import { Volume2, VolumeX, AlertTriangle, HelpCircle } from "lucide-react";
 import { RiskClause } from "../lib/types";
 
 interface RiskCardProps {
@@ -16,7 +16,6 @@ export default function RiskCard({ clause, isSelected = false, onSelect }: RiskC
   const { elderMode } = useAccessibility();
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-  // Stop speaking if component unmounts
   useEffect(() => {
     return () => {
       if (typeof window !== "undefined" && window.speechSynthesis) {
@@ -26,8 +25,8 @@ export default function RiskCard({ clause, isSelected = false, onSelect }: RiskC
   }, []);
 
   const handleSpeak = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Avoid triggering card selection click
-    
+    e.stopPropagation();
+
     if (typeof window === "undefined" || !window.speechSynthesis) {
       alert("Text-to-speech is not supported in this browser.");
       return;
@@ -40,136 +39,125 @@ export default function RiskCard({ clause, isSelected = false, onSelect }: RiskC
     }
 
     window.speechSynthesis.cancel();
-    
+
     const textToSpeak = `
-      Risk category: ${clause.risk_type}. 
-      Plain meaning: ${clause.plain_english}. 
-      Why it matters: ${clause.why_it_matters}. 
+      Risk category: ${clause.risk_type}.
+      Plain meaning: ${clause.plain_english}.
+      Why it matters: ${clause.why_it_matters}.
       Question to ask before signing: ${clause.question_to_ask}
     `;
-    
+
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.rate = elderMode ? 0.8 : 0.95; // Slower rate for elder mode
+    utterance.rate = elderMode ? 0.8 : 0.95;
     utterance.pitch = 1.0;
-    
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
-    
+
     setIsSpeaking(true);
     window.speechSynthesis.speak(utterance);
   };
 
-  const getBorderColor = () => {
-    if (isSelected) return "border-amber-500 ring-2 ring-amber-500/20";
-    
-    switch (clause.severity) {
-      case "high":
-        return "border-red-500/30 hover:border-red-500/60";
-      case "medium":
-        return "border-orange-500/30 hover:border-orange-500/60";
-      case "low":
-        return "border-slate-700 hover:border-slate-500";
-    }
-  };
-
-  const getBgColor = () => {
-    if (isSelected) return "bg-slate-900/80";
-    
-    switch (clause.severity) {
-      case "high":
-        return "bg-red-500/[0.02] hover:bg-slate-900/40";
-      case "medium":
-        return "bg-orange-500/[0.02] hover:bg-slate-900/40";
-      case "low":
-        return "bg-slate-900/20 hover:bg-slate-900/40";
-    }
-  };
+  // Severity-driven accent on a calm light surface
+  const accent =
+    clause.severity === "high"
+      ? { rail: "bg-red-500", ring: "ring-red-400", icon: "text-red-600" }
+      : clause.severity === "medium"
+        ? { rail: "bg-amber-500", ring: "ring-amber-400", icon: "text-amber-600" }
+        : { rail: "bg-stone-400", ring: "ring-stone-300", icon: "text-stone-500" };
 
   return (
     <div
       onClick={onSelect}
-      className={`border rounded-xl p-5 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-4 ${getBorderColor()} ${getBgColor()}`}
+      className={`relative overflow-hidden rounded-2xl border bg-surface p-5 transition-all ${
+        onSelect ? "cursor-pointer" : ""
+      } ${
+        isSelected
+          ? `border-transparent ring-2 ${accent.ring}`
+          : "border-line hover:border-faint"
+      }`}
     >
-      <div className="space-y-3">
-        {/* Header line */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
+      <span className={`absolute inset-y-0 left-0 w-1.5 ${accent.rail}`} aria-hidden />
+
+      <div className="space-y-4 pl-2">
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <AlertTriangle className={`text-amber-500 ${elderMode ? "w-6 h-6" : "w-4 h-4"}`} />
-            <h4 className={`font-bold text-slate-100 ${elderMode ? "text-xl" : "text-sm"}`}>
+            <AlertTriangle className={`keep-color ${accent.icon} ${elderMode ? "h-6 w-6" : "h-5 w-5"}`} />
+            <h4 className={`font-serif font-medium text-ink ${elderMode ? "text-2xl" : "text-lg"}`}>
               {clause.risk_type}
             </h4>
           </div>
           <SeverityBadge severity={clause.severity} />
         </div>
 
-        {/* Original Legal Clause (Confusing Text) */}
-        <div className="bg-slate-950/60 rounded-lg p-3 border border-slate-800">
-          <p className={`font-mono text-slate-400 select-all italic ${elderMode ? "text-md" : "text-xs"}`}>
-            "{clause.text}"
+        {/* Original clause */}
+        <div className="rounded-lg border border-line bg-paper/50 p-3">
+          <p className={`select-all font-serif italic text-muted ${elderMode ? "text-base" : "text-sm"}`}>
+            “{clause.text}”
           </p>
         </div>
 
-        {/* Translation: Plain English */}
+        {/* Plain meaning */}
         <div className="space-y-1">
-          <span className={`block font-bold text-amber-400 uppercase tracking-wide ${elderMode ? "text-sm" : "text-[10px]"}`}>
-            Plain Meaning:
+          <span className={`block font-semibold uppercase tracking-wide text-shield ${elderMode ? "text-sm" : "text-[11px]"}`}>
+            Plain meaning
           </span>
-          <p className={`text-slate-200 leading-relaxed font-semibold ${elderMode ? "text-lg" : "text-sm"}`}>
+          <p className={`font-semibold leading-relaxed text-ink ${elderMode ? "text-lg" : "text-base"}`}>
             {clause.plain_english}
           </p>
         </div>
 
         {/* Why it matters */}
         <div className="space-y-1">
-          <span className={`block font-bold text-slate-400 uppercase tracking-wide ${elderMode ? "text-sm" : "text-[10px]"}`}>
-            Why It Matters:
+          <span className={`block font-semibold uppercase tracking-wide text-faint ${elderMode ? "text-sm" : "text-[11px]"}`}>
+            Why it matters
           </span>
-          <p className={`text-slate-300 leading-relaxed ${elderMode ? "text-md" : "text-xs"}`}>
+          <p className={`leading-relaxed text-muted ${elderMode ? "text-base" : "text-sm"}`}>
             {clause.why_it_matters}
           </p>
         </div>
 
-        {/* Question to Ask */}
-        <div className="flex items-start gap-2 bg-amber-500/5 p-3 rounded-lg border border-amber-500/10">
-          <HelpCircle className={`text-amber-400 shrink-0 mt-0.5 ${elderMode ? "w-6 h-6" : "w-4 h-4"}`} />
+        {/* Question to ask */}
+        <div className="flex items-start gap-2.5 rounded-xl border border-shield/15 bg-shield-soft/60 p-3">
+          <HelpCircle className={`keep-color mt-0.5 shrink-0 text-shield ${elderMode ? "h-6 w-6" : "h-5 w-5"}`} />
           <div className="space-y-0.5">
-            <span className={`block font-bold text-amber-400 ${elderMode ? "text-sm" : "text-[10px]"}`}>
-              Suggested Question to Ask:
+            <span className={`block font-semibold text-shield-dark ${elderMode ? "text-sm" : "text-[11px]"}`}>
+              Ask before you sign
             </span>
-            <p className={`text-amber-200 italic font-semibold ${elderMode ? "text-md" : "text-xs"}`}>
-              "{clause.question_to_ask}"
+            <p className={`font-semibold italic text-shield-dark ${elderMode ? "text-base" : "text-sm"}`}>
+              “{clause.question_to_ask}”
             </p>
           </div>
         </div>
       </div>
 
-      {/* Action panel */}
-      <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-4">
+      {/* Listen */}
+      <div className="mt-4 flex items-center justify-between gap-4 border-t border-line pt-3 pl-2">
         <button
           onClick={handleSpeak}
-          className={`flex items-center gap-2 rounded-lg font-bold border transition-all ${
+          className={`flex items-center gap-2 rounded-lg border font-semibold transition-colors ${
             isSpeaking
-              ? "bg-red-500/15 border-red-500/40 text-red-400 hover:bg-red-500/20"
-              : "bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-slate-100"
-          } ${elderMode ? "px-4 py-2.5 text-lg" : "px-3 py-1.5 text-xs"}`}
-          title="Read description out loud"
+              ? "border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
+              : "border-line bg-white text-ink hover:border-shield hover:text-shield"
+          } ${elderMode ? "px-4 py-2.5 text-lg" : "px-3 py-1.5 text-sm"}`}
+          title="Read this explanation out loud"
         >
           {isSpeaking ? (
             <>
-              <VolumeX className={elderMode ? "w-5 h-5" : "w-4 h-4"} />
-              <span>Stop Speaking</span>
+              <VolumeX className={`keep-color ${elderMode ? "h-5 w-5" : "h-4 w-4"}`} />
+              <span>Stop</span>
             </>
           ) : (
             <>
-              <Volume2 className={elderMode ? "w-5 h-5" : "w-4 h-4"} />
-              <span>Listen (Read Aloud)</span>
+              <Volume2 className={`keep-color ${elderMode ? "h-5 w-5" : "h-4 w-4"}`} />
+              <span>Listen</span>
             </>
           )}
         </button>
 
         {onSelect && (
-          <span className={`text-slate-500 font-medium ${elderMode ? "text-sm" : "text-[10px]"}`}>
-            {isSelected ? "Selected" : "Click to view location"}
+          <span className={`font-medium text-faint ${elderMode ? "text-sm" : "text-xs"}`}>
+            {isSelected ? "Selected" : "Click to locate"}
           </span>
         )}
       </div>

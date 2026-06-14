@@ -10,42 +10,25 @@ interface SeverityBadgeProps {
 export default function SeverityBadge({ severity }: SeverityBadgeProps) {
   const { elderMode } = useAccessibility();
 
-  const getStyles = () => {
-    if (elderMode) {
-      switch (severity) {
-        case "high":
-          return "bg-red-600 text-white border-2 border-black font-extrabold text-lg px-4 py-1.5";
-        case "medium":
-          return "bg-orange-500 text-slate-900 border-2 border-black font-extrabold text-lg px-4 py-1.5";
-        case "low":
-          return "bg-amber-300 text-slate-900 border-2 border-black font-extrabold text-lg px-4 py-1.5";
-      }
-    } else {
-      switch (severity) {
-        case "high":
-          return "bg-red-500/10 text-red-400 border border-red-500/20 text-xs px-2.5 py-0.5";
-        case "medium":
-          return "bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs px-2.5 py-0.5";
-        case "low":
-          return "bg-slate-800 text-slate-300 border border-slate-700 text-xs px-2.5 py-0.5";
-      }
-    }
+  const styles: Record<SeverityBadgeProps["severity"], string> = {
+    high: "bg-red-600 text-white",
+    medium: "bg-amber-500 text-amber-950",
+    low: "bg-stone-200 text-stone-700",
   };
 
-  const getLabel = () => {
-    switch (severity) {
-      case "high":
-        return "HIGH RISK";
-      case "medium":
-        return "MEDIUM RISK";
-      case "low":
-        return "LOW RISK";
-    }
+  const labels: Record<SeverityBadgeProps["severity"], string> = {
+    high: "High risk",
+    medium: "Medium risk",
+    low: "Low risk",
   };
 
   return (
-    <span className={`inline-block rounded-md tracking-wider ${getStyles()}`}>
-      {getLabel()}
+    <span
+      className={`keep-color inline-block rounded-full font-bold uppercase tracking-wide ${styles[severity]} ${
+        elderMode ? "px-4 py-1.5 text-base" : "px-3 py-1 text-[11px]"
+      }`}
+    >
+      {labels[severity]}
     </span>
   );
 }

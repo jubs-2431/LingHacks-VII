@@ -12,12 +12,12 @@ interface UploadBoxProps {
 }
 
 const DOCUMENT_TYPES = [
-  { value: "lease", label: "Rent Lease Agreement" },
-  { value: "insurance", label: "Insurance Form" },
-  { value: "medical", label: "Medical Consent or Form" },
-  { value: "financial", label: "Financial / Loan Agreement" },
-  { value: "terms", label: "Terms of Service / Privacy Policy" },
-  { value: "other", label: "Other Official Document" },
+  { value: "lease", label: "Rent / lease agreement" },
+  { value: "insurance", label: "Insurance form" },
+  { value: "medical", label: "Medical consent or form" },
+  { value: "financial", label: "Financial / loan agreement" },
+  { value: "terms", label: "Terms of service / privacy policy" },
+  { value: "other", label: "Other official document" },
 ];
 
 export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
@@ -46,10 +46,12 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
       if (extractedText.trim()) {
         setText(extractedText);
       } else {
-        setError("We couldn't extract any readable text from this PDF. It might be scanned. Please paste the text directly.");
+        setError(
+          "We couldn't extract any readable text from this PDF. It might be scanned. Please paste the text directly.",
+        );
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to extract text from PDF.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to extract text from PDF.");
     } finally {
       setExtracting(false);
     }
@@ -72,7 +74,7 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
   };
 
   const loadSample = () => {
-    const sampleText = 
+    const sampleText =
       "By signing this agreement, you agree to resolve all disputes through binding arbitration and waive your right to participate in any class action. This agreement will automatically renew unless cancelled in writing at least 30 days before the renewal date. Failure to submit payment within 10 business days may result in late fees. We may share your information with third-party service providers as needed. Additional documentation may be required at our discretion.";
     setText(sampleText);
     setDocType("terms");
@@ -80,21 +82,24 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
     setFileName(null);
   };
 
+  const labelClass = `font-semibold text-ink ${elderMode ? "text-xl" : "text-sm"}`;
+  const stepNum =
+    "grid h-6 w-6 shrink-0 place-items-center rounded-full bg-shield text-xs font-bold text-white";
+
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto space-y-6">
-      <div className="flex flex-col gap-2">
-        <label 
-          htmlFor="doc-type" 
-          className={`font-semibold ${elderMode ? "text-2xl text-slate-100" : "text-sm text-slate-300"}`}
-        >
-          1. What kind of document is this?
+    <form onSubmit={handleSubmit} className="w-full space-y-7">
+      {/* Step 1 */}
+      <div className="flex flex-col gap-2.5">
+        <label htmlFor="doc-type" className={`flex items-center gap-2.5 ${labelClass}`}>
+          <span className={stepNum}>1</span>
+          What kind of document is this?
         </label>
         <select
           id="doc-type"
           value={docType}
           onChange={(e) => setDocType(e.target.value)}
-          className={`w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all ${
-            elderMode ? "p-4 text-xl h-16" : "p-3 text-sm h-11"
+          className={`w-full rounded-xl border border-line bg-white text-ink shadow-sm transition-all focus:border-shield focus:ring-2 focus:ring-shield/30 ${
+            elderMode ? "h-16 p-4 text-xl" : "h-12 p-3 text-base"
           }`}
         >
           {DOCUMENT_TYPES.map((type) => (
@@ -105,115 +110,116 @@ export default function UploadBox({ onAnalyze, isLoading }: UploadBoxProps) {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* PDF Upload Zone */}
-        <div className="flex flex-col gap-2">
-          <span className={`font-semibold ${elderMode ? "text-2xl text-slate-100" : "text-sm text-slate-300"}`}>
-            Option A: Upload a PDF document
-          </span>
+      {/* Step 2 */}
+      <div className="flex flex-col gap-2.5">
+        <span className={`flex items-center gap-2.5 ${labelClass}`}>
+          <span className={stepNum}>2</span>
+          Add the text — upload a PDF or paste it
+        </span>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* PDF Upload Zone */}
           <div
             {...getRootProps()}
-            className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 min-h-[200px] ${
-              isDragActive 
-                ? "border-amber-500 bg-amber-500/10" 
-                : "border-slate-700 hover:border-slate-500 bg-slate-900/40 hover:bg-slate-900/60"
+            className={`flex min-h-[190px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center transition-all ${
+              isDragActive
+                ? "border-shield bg-shield-soft"
+                : "border-line bg-paper/50 hover:border-shield/50 hover:bg-paper"
             }`}
           >
             <input {...getInputProps()} />
             {extracting ? (
               <div className="flex flex-col items-center gap-2">
-                <RefreshCw className="w-10 h-10 text-amber-500 animate-spin" />
-                <p className={elderMode ? "text-xl font-medium" : "text-sm font-medium"}>
-                  Extracting text from PDF...
+                <RefreshCw className="keep-color h-9 w-9 animate-spin text-shield" />
+                <p className={`font-medium text-ink ${elderMode ? "text-xl" : "text-sm"}`}>
+                  Reading text from PDF…
                 </p>
               </div>
             ) : fileName ? (
               <div className="flex flex-col items-center gap-2">
-                <FileText className="w-12 h-12 text-amber-400" />
-                <p className={`font-medium break-all ${elderMode ? "text-lg text-amber-300" : "text-xs text-amber-400"}`}>
+                <FileText className="keep-color h-10 w-10 text-shield" />
+                <p className={`break-all font-semibold text-shield-dark ${elderMode ? "text-lg" : "text-sm"}`}>
                   {fileName}
                 </p>
-                <p className={`text-slate-400 ${elderMode ? "text-lg" : "text-xs"}`}>
-                  Text loaded! You can edit it below or click analyze.
+                <p className={`text-muted ${elderMode ? "text-lg" : "text-xs"}`}>
+                  Text loaded — edit it below or analyze.
                 </p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <Upload className="w-10 h-10 text-slate-400" />
-                <p className={`font-semibold text-slate-200 ${elderMode ? "text-xl" : "text-sm"}`}>
-                  Drag and drop your PDF here
+                <Upload className="keep-color h-9 w-9 text-faint" />
+                <p className={`font-semibold text-ink ${elderMode ? "text-xl" : "text-base"}`}>
+                  Drag &amp; drop a PDF here
                 </p>
-                <p className={`text-slate-400 ${elderMode ? "text-lg" : "text-xs"}`}>
-                  or click to select a file from your computer
+                <p className={`text-muted ${elderMode ? "text-lg" : "text-xs"}`}>
+                  or click to choose a file
                 </p>
               </div>
             )}
           </div>
-        </div>
 
-        {/* Paste Box Description */}
-        <div className="flex flex-col justify-between p-6 bg-slate-900/20 border border-slate-800 rounded-xl">
-          <div className="space-y-4">
-            <h3 className={`font-semibold text-slate-200 ${elderMode ? "text-2xl" : "text-md"}`}>
-              Need an example?
-            </h3>
-            <p className={`text-slate-400 ${elderMode ? "text-lg leading-relaxed" : "text-xs leading-relaxed"}`}>
-              Try ElderShield right now with a mock contract clause containing binding arbitration, auto-renew, deadlines, and ambiguous rules.
-            </p>
+          {/* Sample helper */}
+          <div className="flex flex-col justify-between rounded-xl border border-line bg-white p-6">
+            <div className="space-y-2">
+              <h3 className={`font-serif font-medium text-ink ${elderMode ? "text-2xl" : "text-lg"}`}>
+                No document handy?
+              </h3>
+              <p className={`leading-relaxed text-muted ${elderMode ? "text-lg" : "text-sm"}`}>
+                Try ElderShield with a sample contract clause containing binding
+                arbitration, auto-renewal, deadlines, and vague terms.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={loadSample}
+              className={`mt-4 w-full rounded-lg border border-shield/30 bg-shield-soft font-semibold text-shield-dark transition-colors hover:border-shield hover:bg-shield-soft/70 ${
+                elderMode ? "p-4 text-lg" : "p-3 text-sm"
+              }`}
+            >
+              Load a sample clause
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={loadSample}
-            className={`w-full mt-4 font-bold border border-amber-500/30 hover:border-amber-500 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-lg transition-all ${
-              elderMode ? "p-4 text-lg" : "p-3 text-sm"
-            }`}
-          >
-            Load Sample Contract Clause
-          </button>
         </div>
       </div>
 
-      {/* Paste text area */}
-      <div className="flex flex-col gap-2">
-        <label 
-          htmlFor="doc-text" 
-          className={`font-semibold ${elderMode ? "text-2xl text-slate-100" : "text-sm text-slate-300"}`}
-        >
-          2. Document Text (Edit or paste here)
+      {/* Text area */}
+      <div className="flex flex-col gap-2.5">
+        <label htmlFor="doc-text" className={labelClass}>
+          Document text
         </label>
         <textarea
           id="doc-text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Paste the contract, agreement, or official terms here..."
-          className={`w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-mono resize-y min-h-[220px] ${
-            elderMode ? "p-5 text-lg leading-relaxed" : "p-4 text-xs leading-normal"
+          placeholder="Paste the contract, agreement, or official terms here…"
+          className={`min-h-[220px] w-full resize-y rounded-xl border border-line bg-white text-ink shadow-sm transition-all focus:border-shield focus:ring-2 focus:ring-shield/30 ${
+            elderMode ? "p-5 text-lg leading-relaxed" : "p-4 text-sm leading-relaxed"
           }`}
         />
       </div>
 
       {error && (
-        <div className="flex items-start gap-3 bg-red-900/20 border border-red-500/40 p-4 rounded-xl text-red-300">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 rounded-xl border border-red-300 bg-red-50 p-4 text-red-800">
+          <AlertCircle className="keep-color mt-0.5 h-5 w-5 shrink-0 text-red-600" />
           <span className={elderMode ? "text-lg" : "text-sm"}>{error}</span>
         </div>
       )}
 
-      {/* Submit Button */}
+      {/* Submit */}
       <button
         type="submit"
         disabled={isLoading || extracting}
-        className={`w-full font-bold bg-amber-500 hover:bg-amber-600 disabled:bg-slate-700 text-slate-900 rounded-xl transition-all shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 flex items-center justify-center gap-3 ${
-          elderMode ? "py-5 text-2xl h-18" : "py-3.5 text-md h-12"
+        className={`flex w-full items-center justify-center gap-3 rounded-xl bg-shield font-semibold text-white shadow-lg shadow-shield/20 transition-colors hover:bg-shield-dark disabled:cursor-not-allowed disabled:bg-faint disabled:shadow-none ${
+          elderMode ? "py-5 text-2xl" : "py-4 text-lg"
         }`}
       >
         {isLoading ? (
           <>
-            <RefreshCw className="w-6 h-6 animate-spin" />
-            <span>Analyzing text patterns...</span>
+            <RefreshCw className="keep-color h-6 w-6 animate-spin" />
+            <span>Reading the fine print…</span>
           </>
         ) : (
-          <span>Analyze Document for Risks</span>
+          <span>Check this document</span>
         )}
       </button>
     </form>

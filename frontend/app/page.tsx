@@ -4,221 +4,273 @@ import React from "react";
 import Link from "next/link";
 import { useAccessibility } from "../lib/AccessibilityContext";
 import ElderModeToggle from "../components/ElderModeToggle";
-import { ShieldAlert, FileText, CheckCircle2, ShieldCheck, ArrowRight, HelpCircle } from "lucide-react";
+import SiteHeader from "../components/SiteHeader";
+import {
+  ShieldAlert,
+  CheckCircle2,
+  ArrowRight,
+  HelpCircle,
+  ScrollText,
+  Ear,
+  Printer,
+} from "lucide-react";
 
 export default function LandingPage() {
   const { elderMode } = useAccessibility();
 
   return (
-    <div className="min-h-screen flex flex-col justify-between">
-      {/* Header */}
-      <header className={`border-b ${
-        elderMode 
-          ? "border-slate-900 bg-white py-6" 
-          : "border-slate-800 bg-slate-900/50 backdrop-blur py-4"
-      } px-6 md:px-12 sticky top-0 z-50 transition-colors`}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <ShieldCheck className={`text-amber-500 ${elderMode ? "w-10 h-10" : "w-8 h-8"}`} />
-            <span className={`font-extrabold tracking-tight ${
-              elderMode ? "text-3xl text-slate-950" : "text-xl text-white"
-            }`}>
-              ElderShield
-            </span>
-          </Link>
-          <ElderModeToggle />
-        </div>
-      </header>
+    <div className="min-h-screen flex flex-col">
+      <SiteHeader />
 
-      {/* Main Content */}
-      <main className={`flex-1 py-12 md:py-20 px-6 md:px-12 ${
-        elderMode ? "bg-white text-slate-950" : "bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950"
-      }`}>
-        <div className="max-w-5xl mx-auto space-y-16">
-          {/* Hero Section */}
-          <section className="text-center space-y-6">
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border ${
-              elderMode 
-                ? "border-slate-950 bg-slate-100 text-slate-900 text-lg font-bold" 
-                : "border-amber-500/20 bg-amber-500/5 text-amber-400 text-xs font-semibold"
-            }`}>
-              <ShieldAlert className="w-4 h-4" />
-              <span>LingHacks VII Presentation</span>
-            </div>
-            
-            <h1 className={`font-black tracking-tight leading-tight ${
-              elderMode ? "text-5xl md:text-6xl text-slate-950" : "text-4xl md:text-6xl text-white"
-            }`}>
-              Before you sign, <br />
-              <span className="text-amber-500">know what it means.</span>
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="relative overflow-hidden border-b border-line">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-70"
+            style={{
+              backgroundImage:
+                "radial-gradient(60% 50% at 50% -8%, rgba(21,112,107,0.10), transparent 70%)",
+            }}
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-5xl px-6 py-16 text-center md:px-12 md:py-24">
+            <span className="inline-flex items-center gap-2 rounded-full border border-shield/25 bg-shield-soft px-4 py-1.5 text-shield">
+              <ShieldAlert className="h-4 w-4" />
+              <span className={`font-semibold ${elderMode ? "text-lg" : "text-sm"}`}>
+                Plain-language protection before you sign
+              </span>
+            </span>
+
+            <h1
+              className={`mx-auto mt-7 max-w-3xl font-serif font-medium leading-[1.04] tracking-[-0.02em] text-ink ${
+                elderMode ? "text-5xl md:text-7xl" : "text-5xl md:text-7xl"
+              }`}
+            >
+              Before you sign,{" "}
+              <span className="text-shield">know what it means.</span>
             </h1>
-            
-            <p className={`max-w-2xl mx-auto text-slate-400 leading-relaxed ${
-              elderMode ? "text-2xl text-slate-800 font-semibold" : "text-md md:text-lg text-slate-300"
-            }`}>
-              ElderShield is a legal fine-print friction map designed for elderly adults and their caregivers. We find the exact phrases where legal language creates hidden responsibilities, costs, and lost rights.
+
+            <p
+              className={`mx-auto mt-6 max-w-2xl leading-8 text-muted ${
+                elderMode ? "text-2xl font-medium text-ink" : "text-lg md:text-xl"
+              }`}
+            >
+              ElderShield reads the fine print for you and points to the exact
+              phrases where legal language creates hidden costs, deadlines, and
+              lost rights — in clear, large, friendly English.
             </p>
 
-            <div className="pt-4">
+            <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/analyze"
-                className={`inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-black rounded-xl transition-all shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 ${
-                  elderMode ? "px-10 py-5 text-2xl border-3 border-black" : "px-8 py-4 text-md"
+                className={`group inline-flex items-center gap-3 rounded-full bg-shield font-semibold text-white shadow-lg shadow-shield/20 transition-colors hover:bg-shield-dark ${
+                  elderMode ? "px-10 py-5 text-2xl" : "px-8 py-4 text-lg"
                 }`}
               >
-                <span>Analyze a Document Now</span>
-                <ArrowRight className={elderMode ? "w-6 h-6" : "w-5 h-5"} />
+                <span>Analyze a document</span>
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
               </Link>
+              <span className={`text-muted ${elderMode ? "text-lg" : "text-sm"}`}>
+                Free · No account · Nothing stored
+              </span>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Problem vs Solution cards */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className={`border rounded-2xl p-8 space-y-4 ${
-              elderMode 
-                ? "border-slate-900 bg-slate-50 text-slate-950" 
-                : "border-slate-800 bg-slate-900/30"
-            }`}>
-              <h2 className={`font-extrabold flex items-center gap-2 ${
-                elderMode ? "text-3xl text-red-700" : "text-xl text-red-400"
-              }`}>
-                The Problem
+        {/* Problem vs Solution */}
+        <section className="mx-auto max-w-5xl px-6 py-16 md:px-12 md:py-20">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <article className="rounded-2xl border border-line bg-surface p-8">
+              <h2
+                className={`flex items-center gap-2 font-serif font-medium text-red-700 ${
+                  elderMode ? "text-3xl" : "text-2xl"
+                }`}
+              >
+                The problem
               </h2>
-              <ul className={`space-y-3 ${elderMode ? "text-xl" : "text-sm text-slate-400"}`}>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold shrink-0 mt-0.5">•</span>
-                  <span><strong>Jargon Overload:</strong> Official paperwork uses confusing words designed to hide meaning.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold shrink-0 mt-0.5">•</span>
-                  <span><strong>Hidden Traps:</strong> Automatic subscription renewals, binding arbitration, and short deadlines.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold shrink-0 mt-0.5">•</span>
-                  <span><strong>High Stakes:</strong> Elderly users can face sudden financial penalties, lost rights, or data sharing scams.</span>
-                </li>
+              <ul className={`mt-5 space-y-4 text-ink ${elderMode ? "text-xl" : "text-base"}`}>
+                <ProblemItem tone="bad" title="Jargon overload">
+                  Official paperwork uses confusing words that hide what you are
+                  actually agreeing to.
+                </ProblemItem>
+                <ProblemItem tone="bad" title="Hidden traps">
+                  Automatic renewals, binding arbitration, and short deadlines are
+                  buried in dense paragraphs.
+                </ProblemItem>
+                <ProblemItem tone="bad" title="High stakes">
+                  A missed clause can mean sudden fees, lost rights, or shared
+                  personal data.
+                </ProblemItem>
               </ul>
-            </div>
+            </article>
 
-            <div className={`border rounded-2xl p-8 space-y-4 ${
-              elderMode 
-                ? "border-slate-900 bg-slate-50 text-slate-950" 
-                : "border-slate-800 bg-slate-900/30"
-            }`}>
-              <h2 className={`font-extrabold flex items-center gap-2 ${
-                elderMode ? "text-3xl text-emerald-700" : "text-xl text-emerald-400"
-              }`}>
-                Our Solution
+            <article className="rounded-2xl border border-shield/20 bg-shield-soft/50 p-8">
+              <h2
+                className={`flex items-center gap-2 font-serif font-medium text-shield-dark ${
+                  elderMode ? "text-3xl" : "text-2xl"
+                }`}
+              >
+                How ElderShield helps
               </h2>
-              <ul className={`space-y-3 ${elderMode ? "text-xl" : "text-sm text-slate-400"}`}>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-500 font-bold shrink-0 mt-0.5">•</span>
-                  <span><strong>Linguistic Risk Extraction:</strong> We isolate sentences creating legal burdens.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-500 font-bold shrink-0 mt-0.5">•</span>
-                  <span><strong>Plain Meanings:</strong> Complex clauses are explained in simple, friendly, large-font English.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-500 font-bold shrink-0 mt-0.5">•</span>
-                  <span><strong>Action Checklist:</strong> Generates list of key questions to ask before signing.</span>
-                </li>
+              <ul className={`mt-5 space-y-4 text-ink ${elderMode ? "text-xl" : "text-base"}`}>
+                <ProblemItem tone="good" title="Finds the risky phrases">
+                  We isolate the exact sentences that create legal burdens, and
+                  show you where they are.
+                </ProblemItem>
+                <ProblemItem tone="good" title="Explains in plain English">
+                  Each clause is rewritten in simple, large-font language anyone
+                  can follow.
+                </ProblemItem>
+                <ProblemItem tone="good" title="Gives you questions to ask">
+                  You leave with a printable checklist of questions for a family
+                  member, caregiver, or lawyer.
+                </ProblemItem>
               </ul>
-            </div>
-          </section>
+            </article>
+          </div>
+        </section>
 
-          {/* Interactive Demo Preview Card */}
-          <section className={`border rounded-2xl p-8 md:p-10 space-y-6 ${
-            elderMode 
-              ? "border-slate-900 bg-white" 
-              : "border-slate-800 bg-slate-900/20"
-          }`}>
-            <div className="space-y-2">
-              <h3 className={`font-bold ${elderMode ? "text-3xl" : "text-xl text-white"}`}>
-                Example: Fine Print Extraction
-              </h3>
-              <p className={`text-slate-400 ${elderMode ? "text-lg text-slate-800" : "text-xs"}`}>
-                See how ElderShield breaks down complex terms compared to generic summarizers.
+        {/* Example extraction */}
+        <section className="border-y border-line bg-surface">
+          <div className="mx-auto max-w-5xl px-6 py-16 md:px-12 md:py-20">
+            <div className="text-center">
+              <p className="font-serif text-sm font-semibold uppercase tracking-[0.18em] text-shield">
+                See it in action
               </p>
+              <h3
+                className={`mt-3 font-serif font-medium text-ink ${
+                  elderMode ? "text-4xl" : "text-3xl md:text-4xl"
+                }`}
+              >
+                From legalese to plain meaning.
+              </h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              {/* Input side */}
-              <div className="space-y-3">
-                <span className={`block font-bold text-slate-400 uppercase tracking-wider ${
-                  elderMode ? "text-md text-slate-700" : "text-[10px]"
-                }`}>
-                  Original Document Section:
+            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="rounded-2xl border border-line bg-paper/60 p-6">
+                <span className={`font-semibold uppercase tracking-wide text-muted ${elderMode ? "text-base" : "text-xs"}`}>
+                  The document says
                 </span>
-                <div className={`p-4 rounded-xl font-mono leading-relaxed border ${
-                  elderMode 
-                    ? "bg-slate-100 border-slate-950 text-slate-950 text-lg" 
-                    : "bg-slate-950/40 border-slate-800 text-slate-300 text-xs"
-                }`}>
-                  "You agree to resolve all disputes through <span className="bg-red-500/20 text-red-300 border-b border-red-500 px-0.5">binding arbitration</span> and <span className="bg-red-500/20 text-red-300 border-b border-red-500 px-0.5">waive your right</span> to participate in any class action."
-                </div>
+                <p
+                  className={`mt-4 font-serif leading-relaxed text-ink ${
+                    elderMode ? "text-xl" : "text-lg"
+                  }`}
+                >
+                  “You agree to resolve all disputes through{" "}
+                  <mark className="rounded bg-red-100 px-1 text-red-800 underline decoration-red-400 decoration-2 underline-offset-2">
+                    binding arbitration
+                  </mark>{" "}
+                  and{" "}
+                  <mark className="rounded bg-red-100 px-1 text-red-800 underline decoration-red-400 decoration-2 underline-offset-2">
+                    waive your right
+                  </mark>{" "}
+                  to participate in any class action.”
+                </p>
               </div>
 
-              {/* Output side */}
-              <div className="space-y-3">
-                <span className={`block font-bold text-slate-400 uppercase tracking-wider ${
-                  elderMode ? "text-md text-slate-700" : "text-[10px]"
-                }`}>
-                  ElderShield Extraction:
-                </span>
-                <div className={`p-4 rounded-xl border space-y-3 ${
-                  elderMode 
-                    ? "bg-amber-50 border-slate-950 text-slate-950" 
-                    : "bg-slate-900/60 border-slate-800"
-                }`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={`font-bold ${elderMode ? "text-xl text-red-700" : "text-xs text-red-400"}`}>
-                      Rights Waiver (High Risk)
-                    </span>
-                  </div>
-                  <p className={`font-semibold ${elderMode ? "text-lg" : "text-sm text-slate-200"}`}>
-                    "You cannot take this company to court normally."
-                  </p>
-                  <div className="flex items-start gap-1.5 pt-1.5 border-t border-slate-800">
-                    <HelpCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                    <span className={`italic ${elderMode ? "text-md text-slate-800" : "text-xs text-amber-200"}`}>
-                      Question: "Can I opt out of binding arbitration?"
-                    </span>
-                  </div>
+              <div className="rounded-2xl border border-shield/25 bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`font-semibold uppercase tracking-wide text-shield ${elderMode ? "text-base" : "text-xs"}`}>
+                    ElderShield explains
+                  </span>
+                  <span className="rounded-full bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                    High risk
+                  </span>
+                </div>
+                <p className={`mt-4 font-semibold text-ink ${elderMode ? "text-xl" : "text-lg"}`}>
+                  You give up your right to take this company to court — disputes
+                  go to private arbitration instead.
+                </p>
+                <div className="mt-4 flex items-start gap-2 rounded-xl border border-shield/15 bg-shield-soft/60 p-3">
+                  <HelpCircle className="mt-0.5 h-5 w-5 shrink-0 text-shield" />
+                  <span className={`italic text-shield-dark ${elderMode ? "text-lg" : "text-sm"}`}>
+                    Ask: “Can I opt out of binding arbitration, and how?”
+                  </span>
                 </div>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Accessibility highlights */}
-          <section className="text-center space-y-4">
-            <h3 className={`font-bold ${elderMode ? "text-3xl" : "text-xl text-white"}`}>
-              Built for Real Accessibility
+        {/* Accessibility */}
+        <section className="mx-auto max-w-5xl px-6 py-16 md:px-12 md:py-20">
+          <div className="text-center">
+            <h3 className={`font-serif font-medium text-ink ${elderMode ? "text-4xl" : "text-3xl"}`}>
+              Built for real accessibility.
             </h3>
-            <p className={`max-w-2xl mx-auto text-slate-400 ${
-              elderMode ? "text-xl text-slate-800" : "text-xs"
-            }`}>
-              Accessibility is not an afterthought. ElderShield features high-contrast toggle support, keyboard navigation, Web Speech synthesis (read aloud), simplified layperson summaries, and printable checklist cards.
+            <p className={`mx-auto mt-4 max-w-2xl text-muted ${elderMode ? "text-xl text-ink" : "text-base"}`}>
+              Accessibility is the point, not an afterthought.
             </p>
-          </section>
-        </div>
+          </div>
+          <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <Feature icon={ScrollText} title="Large, simple language" body="High-contrast type and one-click Elder Mode for even larger text." />
+            <Feature icon={Ear} title="Read aloud" body="Every explanation can be spoken with built-in text-to-speech." />
+            <Feature icon={Printer} title="Printable checklist" body="Take a clean list of questions to your next appointment." />
+          </div>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className={`border-t py-8 px-6 md:px-12 text-center text-slate-500 text-xs ${
-        elderMode ? "border-slate-900 bg-white text-slate-900" : "border-slate-900 bg-slate-950"
-      }`}>
-        <div className="max-w-7xl mx-auto space-y-4">
-          <p className={elderMode ? "text-lg font-bold" : ""}>
-            © 2026 ElderShield Project. Created for LingHacks VII.
-          </p>
-          <p className={`max-w-3xl mx-auto leading-relaxed ${
-            elderMode ? "text-sm text-slate-800 font-semibold" : "text-slate-600"
-          }`}>
-            <strong>Important Disclaimer:</strong> ElderShield is not a lawyer and does not provide legal advice. It is an educational tool designed using computational linguistics to highlight potential risks and provide helpful questions to ask before signing.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter elderMode={elderMode} />
     </div>
+  );
+}
+
+function ProblemItem({
+  tone,
+  title,
+  children,
+}: {
+  tone: "bad" | "good";
+  title: string;
+  children: React.ReactNode;
+}) {
+  const Icon = tone === "good" ? CheckCircle2 : ShieldAlert;
+  const color = tone === "good" ? "text-shield" : "text-red-600";
+  return (
+    <li className="flex items-start gap-3">
+      <Icon className={`keep-color mt-0.5 h-5 w-5 shrink-0 ${color}`} />
+      <span>
+        <strong className="font-semibold text-ink">{title}.</strong>{" "}
+        <span className="text-muted">{children}</span>
+      </span>
+    </li>
+  );
+}
+
+function Feature({
+  icon: Icon,
+  title,
+  body,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-line bg-surface p-6 text-left">
+      <span className="grid h-11 w-11 place-items-center rounded-xl bg-shield-soft text-shield">
+        <Icon className="keep-color h-5 w-5" />
+      </span>
+      <h4 className="mt-4 font-serif text-xl font-medium text-ink">{title}</h4>
+      <p className="mt-2 leading-relaxed text-muted">{body}</p>
+    </div>
+  );
+}
+
+export function SiteFooter({ elderMode }: { elderMode: boolean }) {
+  return (
+    <footer className="border-t border-line bg-paper px-6 py-10 text-center md:px-12">
+      <div className="mx-auto max-w-3xl space-y-4">
+        <p className={`text-muted ${elderMode ? "text-lg font-semibold text-ink" : "text-sm"}`}>
+          © 2026 ElderShield Project · Created for LingHacks VII
+        </p>
+        <p className={`mx-auto leading-relaxed text-faint ${elderMode ? "text-base text-ink" : "text-xs"}`}>
+          <strong className="text-muted">Important:</strong> ElderShield is not a
+          lawyer and does not provide legal advice. It is an educational tool that
+          uses computational linguistics to highlight potential risks and suggest
+          questions to ask before you sign.
+        </p>
+      </div>
+    </footer>
   );
 }

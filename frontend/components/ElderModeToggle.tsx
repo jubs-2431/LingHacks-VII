@@ -10,15 +10,16 @@ export default function ElderModeToggle() {
   return (
     <button
       onClick={toggleElderMode}
-      className={`flex items-center gap-3 px-5 py-2.5 rounded-full font-bold shadow-md transition-all duration-300 hover:scale-105 active:scale-95 ${
+      aria-pressed={elderMode}
+      className={`flex items-center gap-2.5 rounded-full font-semibold transition-all hover:scale-[1.02] active:scale-95 ${
         elderMode
-          ? "bg-amber-500 text-slate-900 border-2 border-slate-900 text-xl"
-          : "bg-slate-800 text-amber-400 border border-slate-700 text-sm"
+          ? "bg-shield text-white border-2 border-shield-dark px-5 py-3 text-lg"
+          : "bg-white text-shield border border-shield/30 px-4 py-2 text-sm shadow-sm hover:border-shield"
       }`}
-      aria-label="Toggle Elder Mode for larger text and simpler language"
+      aria-label="Toggle Elder Mode for larger text and higher contrast"
     >
-      <Accessibility className={elderMode ? "w-7 h-7" : "w-4 h-4"} />
-      <span>{elderMode ? "Elder Mode: Active (Large Text)" : "Enable Elder Mode"}</span>
+      <Accessibility className={`keep-color ${elderMode ? "h-6 w-6" : "h-4 w-4"}`} />
+      <span>{elderMode ? "Elder Mode: On" : "Elder Mode"}</span>
     </button>
   );
 }
