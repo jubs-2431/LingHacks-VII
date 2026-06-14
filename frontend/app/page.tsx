@@ -55,7 +55,6 @@ export default function LandingPage() {
   const pageRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const storyRef = useRef<HTMLElement | null>(null);
-  const featuresRef = useRef<HTMLElement | null>(null);
   const frames = useMemo(() => Array.from({ length: FRAME_COUNT }, (_, index) => makeFrame(index)), []);
   const [activeSection, setActiveSection] = useState(0);
   const [frameIndex, setFrameIndex] = useState(0);
@@ -67,8 +66,6 @@ export default function LandingPage() {
   const topProgressScale = useTransform(smoothProgress, [0, 1], [0, 1]);
 
   const { scrollYProgress: storyProgress } = useScroll({ target: storyRef, offset: ["start start", "end end"] });
-  const { scrollYProgress: featureProgress } = useScroll({ target: featuresRef, offset: ["start start", "end end"] });
-  const horizontalX = useTransform(featureProgress, [0, 0.12, 0.42, 0.72, 0.92, 1], ["0vw", "0vw", "-72vw", "-132vw", "-172vw", "-172vw"]);
   const sequenceScale = useTransform(storyProgress, [0, 0.55, 1], [0.92, 1.05, 0.96]);
   const sequenceOpacity = useTransform(storyProgress, [0, 0.08, 0.88, 1], [0, 1, 1, 0.22]);
   const titleOpacity = useTransform(storyProgress, [0, 0.08, 0.82, 1], [0, 1, 1, 0]);
@@ -121,7 +118,26 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="features" ref={featuresRef} className={styles.horizontalSection}><div className={styles.horizontalSticky}><div className={styles.horizontalIntro}><p className={styles.featureEyebrow}>Core features</p><h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Slide through the system.</h2><p className={styles.featureSubcopy}>This section pins. The first card starts fully off-screen to the right, scroll moves the cards left, then the page continues downward.</p></div><motion.div className={styles.horizontalTrack} style={{ x: horizontalX }}>{featureCards.map(([title, body], index) => <article key={title} className={styles.featureCard}><span>0{index + 1}</span><h3>{title}</h3><p>{body}</p></article>)}</motion.div></div></section>
+        <section id="features" className="relative z-10 py-32 px-6 md:px-12 mx-auto max-w-7xl">
+          <div className="mb-16 md:mb-24 text-center max-w-3xl mx-auto">
+            <p className="text-amber-500 font-bold tracking-widest uppercase text-sm mb-4">Core features</p>
+            <h2 className="font-serif text-5xl md:text-7xl leading-tight text-white">How ElderShield works.</h2>
+            <p className="mt-6 text-xl text-slate-300">
+              Scroll down to see the features that power our risk extraction engine.
+            </p>
+          </div>
+          <div className="flex flex-col gap-12 max-w-4xl mx-auto">
+            {featureCards.map(([title, body], index) => (
+              <Reveal key={title}>
+                <article className="border border-white/20 rounded-3xl p-8 md:p-12 bg-white/5 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/10 hover:border-white/30">
+                  <span className="text-amber-500 font-bold tracking-widest text-sm">0{index + 1}</span>
+                  <h3 className="mt-4 font-serif text-3xl md:text-5xl text-white">{title}</h3>
+                  <p className="mt-4 text-lg text-slate-300 leading-relaxed">{body}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </section>
 
         <section id="demo" className={`${styles.cinematicSection} flex min-h-screen items-center justify-center px-6 py-28 text-center`}><Reveal className={`${styles.editorPanel} ${styles.depthCard} max-w-3xl p-8 md:p-12`}><p className="text-sm uppercase tracking-[0.35em] text-muted-foreground">Live demo</p><h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">Ready to test the analyzer.</h2><p className="mt-6 text-lg leading-8 text-muted-foreground">Paste a document, upload a PDF, and see highlighted risks with plain-English explanations and an action checklist.</p><Link href="/analyze" className="liquid-glass mt-8 inline-flex rounded-full px-10 py-4 text-foreground transition-transform hover:scale-[1.03]">Analyze Document</Link></Reveal></section>
       </main>

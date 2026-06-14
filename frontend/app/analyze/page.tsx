@@ -64,7 +64,7 @@ export default function AnalyzePage() {
     <div className="relative min-h-screen overflow-hidden bg-background text-white">
       <video
         ref={videoRef}
-        className="fixed inset-0 z-0 h-[130vh] w-full object-cover opacity-70"
+        className="fixed inset-0 z-0 h-[130vh] w-full object-cover opacity-20"
         autoPlay
         muted
         playsInline
@@ -90,7 +90,7 @@ export default function AnalyzePage() {
 
       <main className="relative z-10 px-6 pb-20 pt-32 md:px-12 md:pt-36">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-          <section className="keep-color space-y-8 text-white lg:sticky lg:top-32">
+          <section className="keep-color space-y-8 text-white">
             <Link
               href="/"
               className={`liquid-glass inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-medium text-white transition-transform hover:scale-[1.03] ${
@@ -130,17 +130,17 @@ export default function AnalyzePage() {
           </section>
 
           <section className="rounded-[2rem] border border-white/20 bg-white/10 p-2 shadow-[0_50px_160px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-            <div className="rounded-[1.6rem] border border-white/20 bg-[#fffdf7] p-6 text-ink shadow-inner md:p-8">
-              <div className="mb-6 flex items-start gap-3 border-b border-line pb-5">
-                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-shield text-white">
-                  <ShieldCheck className="keep-color h-6 w-6 text-white" />
+            <div className="rounded-[1.6rem] border border-white/20 bg-slate-900/60 p-6 text-white shadow-inner md:p-8">
+              <div className="mb-6 flex items-start gap-3 border-b border-white/10 pb-5">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-amber-500/20 text-amber-500">
+                  <ShieldCheck className="keep-color h-6 w-6 text-amber-400" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-3xl font-medium tracking-[-0.01em] text-ink">
+                  <h2 className="font-serif text-3xl font-medium tracking-[-0.01em] text-white">
                     Check a document
                   </h2>
-                  <p className={`mt-1 text-muted ${elderMode ? "text-lg text-ink" : "text-sm"}`}>
-                    The form stays paper-light for readability while the page keeps the cinematic landing feel.
+                  <p className={`mt-1 text-slate-300 ${elderMode ? "text-lg text-slate-200" : "text-sm"}`}>
+                    Fill out the details below.
                   </p>
                 </div>
               </div>
